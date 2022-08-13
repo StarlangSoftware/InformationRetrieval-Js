@@ -19,7 +19,7 @@
         constructor(comparator, fileNameOrTerms) {
             super(comparator);
             this.termComparator = (comparator) => (termA, termB) => (this.wordComparator(comparator)(termA.getTerm(), termB.getTerm()) != 0 ?
-                this.wordComparator(this.comparator)(termA.getTerm(), termB.getTerm()) :
+                this.wordComparator(comparator)(termA.getTerm(), termB.getTerm()) :
                 (termA.getDocId() == termB.getDocId() ?
                     (termA.getPosition() == termB.getPosition() ?
                         0 : (termA.getPosition() < termB.getPosition() ?

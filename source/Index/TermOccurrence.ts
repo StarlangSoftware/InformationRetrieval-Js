@@ -25,7 +25,7 @@ export class TermOccurrence {
         return this.position
     }
 
-    wordComparator = (comparator: WordComparator) =>
+    static wordComparator = (comparator: WordComparator) =>
         (word1: Word, word2: Word) => (comparator == WordComparator.TURKISH ?
                 word1.getName().localeCompare(word2.getName(), "tr") :
                 (comparator == WordComparator.TURKISH_IGNORE_CASE ? word1.getName().toLocaleLowerCase("tr").localeCompare(word2.getName().toLocaleLowerCase("tr"), "tr") :
@@ -33,6 +33,6 @@ export class TermOccurrence {
         )
 
     isDifferent(currentTerm: TermOccurrence, comparator: WordComparator): boolean{
-        return this.wordComparator(comparator)(this.term, currentTerm.getTerm()) != 0
+        return TermOccurrence.wordComparator(comparator)(this.term, currentTerm.getTerm()) != 0
     }
 }

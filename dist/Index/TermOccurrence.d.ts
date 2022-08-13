@@ -8,6 +8,6 @@ export declare class TermOccurrence {
     getTerm(): Word;
     getDocId(): number;
     getPosition(): number;
-    wordComparator: (comparator: WordComparator) => (word1: Word, word2: Word) => number;
+    static wordComparator: (comparator: WordComparator) => (word1: Word, word2: Word) => number;
     isDifferent(currentTerm: TermOccurrence, comparator: WordComparator): boolean;
 }
