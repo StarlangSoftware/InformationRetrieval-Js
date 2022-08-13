@@ -61,12 +61,14 @@
         readPositionalPostingList(fileName) {
             let data = fs.readFileSync(fileName + "-positionalPostings.txt", "utf-8");
             let lines = data.split("\n");
-            for (let i = 0; i < lines.length;) {
-                let items = lines[i].split(" ");
-                let wordId = parseInt(items[0]);
-                let count = parseInt(items[1]);
-                this.positionalIndex.set(wordId, new PositionalPostingList_1.PositionalPostingList(lines.slice(i + 1, i + count + 1)));
-                i += count;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i] != "") {
+                    let items = lines[i].split(" ");
+                    let wordId = parseInt(items[0]);
+                    let count = parseInt(items[1]);
+                    this.positionalIndex.set(wordId, new PositionalPostingList_1.PositionalPostingList(lines.slice(i + 1, i + count + 1)));
+                    i += count;
+                }
             }
         }
         saveSorted(fileName) {
@@ -77,7 +79,7 @@
             items.sort(this.keyComparator);
             let data = "";
             for (let item of items) {
-                data = data + items[1];
+                data = data + item[1];
             }
             fs.writeFileSync(fileName + "-positionalPostings.txt", data, 'utf-8');
         }
@@ -156,6 +158,9 @@
             let N = documents.length;
             let result = new QueryResult_1.QueryResult();
             let scores = new Array();
+            for (let i = 0; i < N; i++) {
+                scores.push(0.0);
+            }
             for (let i = 0; i < query.size(); i++) {
                 let term = dictionary.getWordIndex(query.getTerm(i).getName());
                 if (term != -1) {

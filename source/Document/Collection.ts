@@ -321,7 +321,7 @@ export class Collection {
         let output = ""
         for (let i = 0; i < blockCount; i++){
             files.push(0)
-            filesData.push(fs.readFileSync("tmp-" + i + "-dictionary.txt", "utf-8").split('\n'))
+            filesData.push(fs.readFileSync("tmp-" + tmpName + i + "-dictionary.txt", "utf-8").split('\n'))
             let line = this.getLine(filesData, files, i)
             currentIdList.push(parseInt(line.substring(0, line.indexOf(" "))))
             currentWords.push(line.substring(line.indexOf(" ") + 1))
@@ -350,7 +350,7 @@ export class Collection {
         let output = ""
         for (let i = 0; i < blockCount; i++){
             files.push(0)
-            filesData.push(fs.readFileSync("tmp-" + i + "-postings.txt", "utf-8").split('\n'))
+            filesData.push(fs.readFileSync("tmp-" + tmpName + i + "-postings.txt", "utf-8").split('\n'))
             let line = this.getLine(filesData, files, i)
             let items = line.split(" ")
             currentIdList.push(parseInt(items[0]))
@@ -462,7 +462,7 @@ export class Collection {
             if (i < this.parameter.getDocumentLimit()){
                 i++
             } else {
-                invertedIndex.save("tmp-" + blockCount)
+                invertedIndex.saveSorted("tmp-" + blockCount)
                 invertedIndex = new InvertedIndex()
                 blockCount++
                 i = 0
@@ -475,7 +475,7 @@ export class Collection {
             }
         }
         if (this.documents.length != 0){
-            invertedIndex.save("tmp-" + blockCount)
+            invertedIndex.saveSorted("tmp-" + blockCount)
             blockCount++
         }
         if (termType == TermType.TOKEN){
@@ -495,7 +495,7 @@ export class Collection {
             } else {
                 dictionary.save("tmp-" + blockCount)
                 dictionary = new TermDictionary(this.comparator)
-                invertedIndex.save("tmp-" + blockCount)
+                invertedIndex.saveSorted("tmp-" + blockCount)
                 invertedIndex = new InvertedIndex()
                 blockCount++
                 i = 0
@@ -516,7 +516,7 @@ export class Collection {
         }
         if (this.documents.length != 0){
             dictionary.save("tmp-" + blockCount)
-            invertedIndex.save("tmp-" + blockCount)
+            invertedIndex.saveSorted("tmp-" + blockCount)
             blockCount++
         }
         if (termType == TermType.TOKEN){
@@ -538,7 +538,7 @@ export class Collection {
             } else {
                 dictionary.save("tmp-" + blockCount)
                 dictionary = new TermDictionary(this.comparator)
-                positionalIndex.save("tmp-" + blockCount)
+                positionalIndex.saveSorted("tmp-" + blockCount)
                 positionalIndex = new PositionalIndex()
                 blockCount++;
                 i = 0;
@@ -559,7 +559,7 @@ export class Collection {
         }
         if (this.documents.length != 0){
             dictionary.save("tmp-" + blockCount)
-            positionalIndex.save("tmp-" + blockCount)
+            positionalIndex.saveSorted("tmp-" + blockCount)
             blockCount++;
         }
         if (termType == TermType.TOKEN){
@@ -578,7 +578,7 @@ export class Collection {
             if (i < this.parameter.getDocumentLimit()){
                 i++
             } else {
-                positionalIndex.save("tmp-" + blockCount)
+                positionalIndex.saveSorted("tmp-" + blockCount)
                 positionalIndex = new PositionalIndex()
                 blockCount++
                 i = 0;
@@ -591,7 +591,7 @@ export class Collection {
             }
         }
         if (this.documents.length != 0){
-            positionalIndex.save("tmp-" + blockCount);
+            positionalIndex.saveSorted("tmp-" + blockCount);
             blockCount++;
         }
         if (termType == TermType.TOKEN){
@@ -612,8 +612,8 @@ export class Collection {
 
     searchCollection(query: Query,
                      retrievalType: RetrievalType,
-                     termWeighting: TermWeighting,
-                     documentWeighting: DocumentWeighting): QueryResult{
+                     termWeighting: TermWeighting = TermWeighting.NATURAL,
+                     documentWeighting: DocumentWeighting = DocumentWeighting.NO_IDF): QueryResult{
         switch (this.indexType){
             case IndexType.INCIDENCE_MATRIX:
                 return this.incidenceMatrix.search(query, this.dictionary)

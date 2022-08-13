@@ -8,7 +8,7 @@ export class QueryResultItem {
         this.score = score
     }
 
-    getId(): number{
+    getDocId(): number{
         return this.docId
     }
 

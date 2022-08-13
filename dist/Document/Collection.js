@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList"], factory);
+        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Index/TermWeighting", "./DocumentWeighting", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -22,6 +22,8 @@
     const TermOccurrence_1 = require("../Index/TermOccurrence");
     const Word_1 = require("nlptoolkit-dictionary/dist/Dictionary/Word");
     const RetrievalType_1 = require("../Query/RetrievalType");
+    const TermWeighting_1 = require("../Index/TermWeighting");
+    const DocumentWeighting_1 = require("./DocumentWeighting");
     const QueryResult_1 = require("../Query/QueryResult");
     const PositionalPostingList_1 = require("../Index/PositionalPostingList");
     const PostingList_1 = require("../Index/PostingList");
@@ -290,7 +292,7 @@
             let output = "";
             for (let i = 0; i < blockCount; i++) {
                 files.push(0);
-                filesData.push(fs.readFileSync("tmp-" + i + "-dictionary.txt", "utf-8").split('\n'));
+                filesData.push(fs.readFileSync("tmp-" + tmpName + i + "-dictionary.txt", "utf-8").split('\n'));
                 let line = this.getLine(filesData, files, i);
                 currentIdList.push(parseInt(line.substring(0, line.indexOf(" "))));
                 currentWords.push(line.substring(line.indexOf(" ") + 1));
@@ -319,7 +321,7 @@
             let output = "";
             for (let i = 0; i < blockCount; i++) {
                 files.push(0);
-                filesData.push(fs.readFileSync("tmp-" + i + "-postings.txt", "utf-8").split('\n'));
+                filesData.push(fs.readFileSync("tmp-" + tmpName + i + "-postings.txt", "utf-8").split('\n'));
                 let line = this.getLine(filesData, files, i);
                 let items = line.split(" ");
                 currentIdList.push(parseInt(items[0]));
@@ -432,7 +434,7 @@
                     i++;
                 }
                 else {
-                    invertedIndex.save("tmp-" + blockCount);
+                    invertedIndex.saveSorted("tmp-" + blockCount);
                     invertedIndex = new InvertedIndex_1.InvertedIndex();
                     blockCount++;
                     i = 0;
@@ -445,7 +447,7 @@
                 }
             }
             if (this.documents.length != 0) {
-                invertedIndex.save("tmp-" + blockCount);
+                invertedIndex.saveSorted("tmp-" + blockCount);
                 blockCount++;
             }
             if (termType == TermType_1.TermType.TOKEN) {
@@ -466,7 +468,7 @@
                 else {
                     dictionary.save("tmp-" + blockCount);
                     dictionary = new TermDictionary_1.TermDictionary(this.comparator);
-                    invertedIndex.save("tmp-" + blockCount);
+                    invertedIndex.saveSorted("tmp-" + blockCount);
                     invertedIndex = new InvertedIndex_1.InvertedIndex();
                     blockCount++;
                     i = 0;
@@ -488,7 +490,7 @@
             }
             if (this.documents.length != 0) {
                 dictionary.save("tmp-" + blockCount);
-                invertedIndex.save("tmp-" + blockCount);
+                invertedIndex.saveSorted("tmp-" + blockCount);
                 blockCount++;
             }
             if (termType == TermType_1.TermType.TOKEN) {
@@ -511,7 +513,7 @@
                 else {
                     dictionary.save("tmp-" + blockCount);
                     dictionary = new TermDictionary_1.TermDictionary(this.comparator);
-                    positionalIndex.save("tmp-" + blockCount);
+                    positionalIndex.saveSorted("tmp-" + blockCount);
                     positionalIndex = new PositionalIndex_1.PositionalIndex();
                     blockCount++;
                     i = 0;
@@ -533,7 +535,7 @@
             }
             if (this.documents.length != 0) {
                 dictionary.save("tmp-" + blockCount);
-                positionalIndex.save("tmp-" + blockCount);
+                positionalIndex.saveSorted("tmp-" + blockCount);
                 blockCount++;
             }
             if (termType == TermType_1.TermType.TOKEN) {
@@ -553,7 +555,7 @@
                     i++;
                 }
                 else {
-                    positionalIndex.save("tmp-" + blockCount);
+                    positionalIndex.saveSorted("tmp-" + blockCount);
                     positionalIndex = new PositionalIndex_1.PositionalIndex();
                     blockCount++;
                     i = 0;
@@ -566,7 +568,7 @@
                 }
             }
             if (this.documents.length != 0) {
-                positionalIndex.save("tmp-" + blockCount);
+                positionalIndex.saveSorted("tmp-" + blockCount);
                 blockCount++;
             }
             if (termType == TermType_1.TermType.TOKEN) {
@@ -584,7 +586,7 @@
             this.triGramDictionary = new TermDictionary_1.TermDictionary(this.comparator, terms);
             this.triGramIndex = new NGramIndex_1.NGramIndex(this.triGramDictionary, terms, this.comparator);
         }
-        searchCollection(query, retrievalType, termWeighting, documentWeighting) {
+        searchCollection(query, retrievalType, termWeighting = TermWeighting_1.TermWeighting.NATURAL, documentWeighting = DocumentWeighting_1.DocumentWeighting.NO_IDF) {
             switch (this.indexType) {
                 case IndexType_1.IndexType.INCIDENCE_MATRIX:
                     return this.incidenceMatrix.search(query, this.dictionary);

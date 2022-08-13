@@ -60,9 +60,11 @@
             let data = fs.readFileSync(fileName + "-postings.txt", "utf-8");
             let lines = data.split("\n");
             for (let i = 0; i < lines.length; i = i + 2) {
-                let items = lines[i].split(" ");
-                let wordId = parseInt(items[0]);
-                this.index.set(wordId, new PostingList_1.PostingList(lines[i + 1]));
+                if (lines[i] != "") {
+                    let items = lines[i].split(" ");
+                    let wordId = parseInt(items[0]);
+                    this.index.set(wordId, new PostingList_1.PostingList(lines[i + 1]));
+                }
             }
         }
         saveSorted(fileName) {
@@ -73,7 +75,7 @@
             items.sort(this.keyComparator);
             let data = "";
             for (let item of items) {
-                data = data + items[1];
+                data = data + item[1];
             }
             fs.writeFileSync(fileName + "-postings.txt", data, 'utf-8');
         }

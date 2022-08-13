@@ -53,5 +53,5 @@ export declare class Collection {
     constructDictionaryAndPositionalIndexInDisk(termType: TermType): void;
     constructPositionalIndexInDisk(dictionary: TermDictionary, termType: TermType): void;
     constructNGramIndex(): void;
-    searchCollection(query: Query, retrievalType: RetrievalType, termWeighting: TermWeighting, documentWeighting: DocumentWeighting): QueryResult;
+    searchCollection(query: Query, retrievalType: RetrievalType, termWeighting?: TermWeighting, documentWeighting?: DocumentWeighting): QueryResult;
 }

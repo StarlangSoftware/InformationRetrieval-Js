@@ -15,7 +15,7 @@
             this.docId = docId;
             this.score = score;
         }
-        getId() {
+        getDocId() {
             return this.docId;
         }
         getScore() {

@@ -10,12 +10,14 @@ export class TermDictionary extends Dictionary{
     constructor(comparator: WordComparator, fileNameOrTerms?: any) {
         super(comparator);
         if (fileNameOrTerms != undefined){
-            if (fileNameOrTerms instanceof String){
+            if (typeof fileNameOrTerms === 'string'){
                 let data = fs.readFileSync(fileNameOrTerms + "-dictionary.txt", 'utf8')
                 let lines = data.split("\n")
                 for (let line of lines){
-                    let termId = parseInt(line.substring(0, line.indexOf(" ")))
-                    this.words.push(new Term(line.substring(line.indexOf(" ") + 1), termId))
+                    if (line !== ""){
+                        let termId = parseInt(line.substring(0, line.indexOf(" ")))
+                        this.words.push(new Term(line.substring(line.indexOf(" ") + 1), termId))
+                    }
                 }
             } else {
                 if (fileNameOrTerms instanceof Array){
