@@ -113,7 +113,7 @@
             let terms = new Array();
             for (let i = 0; i < this.size(); i++) {
                 let word = this.getWord(i).getName();
-                terms.concat(TermDictionary.constructNGrams(word, i, k));
+                terms = terms.concat(TermDictionary.constructNGrams(word, i, k));
             }
             terms.sort(this.termComparator(this.comparator));
             return terms;

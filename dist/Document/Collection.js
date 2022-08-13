@@ -51,7 +51,7 @@
             while (i < files.length && j < fileLimit) {
                 let file = files[i];
                 if (file.endsWith(".txt")) {
-                    let document = new Document_1.Document(file, file, j);
+                    let document = new Document_1.Document(directory + "/" + file, file, j);
                     this.documents.push(document);
                     j++;
                 }
@@ -184,7 +184,7 @@
             for (let doc of this.documents) {
                 let documentText = doc.loadDocument();
                 let docTerms = documentText.constructTermList(doc.getDocId(), termType);
-                terms.concat(docTerms);
+                terms = terms.concat(docTerms);
             }
             terms.sort(this.termComparator(this.comparator));
             return terms;

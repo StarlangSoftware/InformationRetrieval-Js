@@ -45,8 +45,8 @@ export class PostingList {
 
     union(secondList: PostingList): PostingList{
         let result = new PostingList()
-        result.postings.concat(this.postings)
-        result.postings.concat(secondList.postings)
+        result.postings = result.postings.concat(this.postings)
+        result.postings = result.postings.concat(secondList.postings)
         return result
     }
 

@@ -55,7 +55,7 @@ export class Collection {
         while (i < files.length && j < fileLimit) {
             let file = files[i]
             if (file.endsWith(".txt")) {
-                let document = new Document(file, file, j)
+                let document = new Document(directory + "/" + file, file, j)
                 this.documents.push(document)
                 j++
             }
@@ -203,7 +203,7 @@ export class Collection {
         for (let doc of this.documents){
             let documentText = doc.loadDocument()
             let docTerms = documentText.constructTermList(doc.getDocId(), termType)
-            terms.concat(docTerms)
+            terms = terms.concat(docTerms)
         }
         terms.sort(this.termComparator(this.comparator))
         return terms;
