@@ -1,5 +1,5 @@
 export declare class Posting {
-    private id;
+    private readonly id;
     constructor(id: number);
     getId(): number;
 }

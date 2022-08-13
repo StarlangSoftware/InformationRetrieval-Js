@@ -1,0 +1,1 @@
+{"version":3,"file":"NGramIndex.js","sourceRoot":"","sources":["../../source/Index/NGramIndex.ts"],"names":[],"mappings":";;;;;;;;;;;;IAAA,mDAA8C;IAI9C,MAAa,UAAW,SAAQ,6BAAa;QAEzC,YAAY,oBAA0B,EAC1B,KAA6B,EAC7B,UAA2B;YACnC,KAAK,CAAC,oBAAoB,EAAE,KAAK,EAAE,UAAU,CAAC,CAAA;QAClD,CAAC;KACJ;IAPD,gCAOC"}

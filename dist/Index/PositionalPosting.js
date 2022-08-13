@@ -29,8 +29,8 @@
             return this.positions.length;
         }
         toString() {
-            let result = this.docId.toString() + " " + this.positions.length.toString();
-            for (let posting in this.positions) {
+            let result = this.docId + " " + this.positions.length;
+            for (let posting of this.positions) {
                 result = result + " " + posting.getId();
             }
             return result;
