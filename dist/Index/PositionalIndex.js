@@ -154,6 +154,23 @@
             }
             return df;
         }
+        setDocumentSizes(documents) {
+            let sizes = new Array();
+            for (let i = 0; i < documents.length; i++) {
+                sizes.push(0);
+            }
+            for (let key of this.positionalIndex.keys()) {
+                let positionalPostingList = this.positionalIndex.get(key);
+                for (let j = 0; j < positionalPostingList.size(); j++) {
+                    let positionalPosting = positionalPostingList.get(j);
+                    let docId = positionalPosting.getDocId();
+                    sizes[docId] += positionalPosting.size();
+                }
+            }
+            for (let doc of documents) {
+                doc.setSize(sizes[doc.getDocId()]);
+            }
+        }
         rankedSearch(query, dictionary, documents, termWeighting, documentWeighting) {
             let N = documents.length;
             let result = new QueryResult_1.QueryResult();

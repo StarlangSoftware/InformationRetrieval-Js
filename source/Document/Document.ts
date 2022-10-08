@@ -58,4 +58,8 @@ export class Document {
     getSize(): number{
         return this.size
     }
+
+    setSize(size: number){
+        this.size = size
+    }
 }

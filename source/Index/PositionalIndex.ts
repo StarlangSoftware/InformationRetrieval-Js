@@ -154,6 +154,24 @@ export class PositionalIndex {
         return df
     }
 
+    setDocumentSizes(documents: Array<Document>){
+        let sizes = new Array<number>()
+        for (let i = 0; i < documents.length; i++){
+            sizes.push(0)
+        }
+        for (let key of this.positionalIndex.keys()){
+            let positionalPostingList = this.positionalIndex.get(key)
+            for (let j = 0; j < positionalPostingList.size(); j++){
+                let positionalPosting = positionalPostingList.get(j)
+                let docId = positionalPosting.getDocId()
+                sizes[docId] += positionalPosting.size()
+            }
+        }
+        for (let doc of documents){
+            doc.setSize(sizes[doc.getDocId()])
+        }
+    }
+
     rankedSearch(query:Query,
                  dictionary: TermDictionary,
                  documents: Array<Document>,

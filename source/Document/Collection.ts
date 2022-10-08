@@ -66,6 +66,7 @@ export class Collection {
             this.invertedIndex = new InvertedIndex(directory)
             if (parameter.constructPositionalIndex()){
                 this.positionalIndex = new PositionalIndex(directory)
+                this.positionalIndex.setDocumentSizes(this.documents)
             }
             if (parameter.constructPhraseIndex()){
                 this.phraseDictionary = new TermDictionary(this.comparator, directory + "-phrase")

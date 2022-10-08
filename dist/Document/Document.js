@@ -54,6 +54,9 @@
         getSize() {
             return this.size;
         }
+        setSize(size) {
+            this.size = size;
+        }
     }
     exports.Document = Document;
 });

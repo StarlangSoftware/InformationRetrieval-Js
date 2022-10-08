@@ -69,7 +69,7 @@ describe('CollectionTest', function() {
             assert.strictEqual(0, result.getItems().length)
         });
         it('testPositionalIndexRankedQuery', function () {
-            parameter.setNGramIndex(true)
+            parameter.setLoadIndexesFromFile(true)
             let collection = new Collection("testCollection2", parameter)
             let query = new Query("Caesar")
             let result = collection.searchCollection(query, RetrievalType.RANKED)

@@ -17,5 +17,6 @@ export declare class PositionalIndex {
     positionalSearch(query: Query, dictionary: TermDictionary): QueryResult;
     getTermFrequencies(docId: number): Array<number>;
     getDocumentFrequencies(): Array<number>;
+    setDocumentSizes(documents: Array<Document>): void;
     rankedSearch(query: Query, dictionary: TermDictionary, documents: Array<Document>, termWeighting: TermWeighting, documentWeighting: DocumentWeighting): QueryResult;
 }

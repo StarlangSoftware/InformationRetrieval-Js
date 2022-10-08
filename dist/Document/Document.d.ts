@@ -14,4 +14,5 @@ export declare class Document {
     getFileName(): string;
     getAbsoluteFileName(): string;
     getSize(): number;
+    setSize(size: number): void;
 }

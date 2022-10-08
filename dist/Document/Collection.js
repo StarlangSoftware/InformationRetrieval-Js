@@ -64,6 +64,7 @@
                 this.invertedIndex = new InvertedIndex_1.InvertedIndex(directory);
                 if (parameter.constructPositionalIndex()) {
                     this.positionalIndex = new PositionalIndex_1.PositionalIndex(directory);
+                    this.positionalIndex.setDocumentSizes(this.documents);
                 }
                 if (parameter.constructPhraseIndex()) {
                     this.phraseDictionary = new TermDictionary_1.TermDictionary(this.comparator, directory + "-phrase");
