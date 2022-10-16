@@ -171,13 +171,10 @@
                 doc.setSize(sizes[doc.getDocId()]);
             }
         }
-        rankedSearch(query, dictionary, documents, termWeighting, documentWeighting) {
+        rankedSearch(query, dictionary, documents, termWeighting, documentWeighting, documentsReturned) {
             let N = documents.length;
             let result = new QueryResult_1.QueryResult();
-            let scores = new Array();
-            for (let i = 0; i < N; i++) {
-                scores.push(0.0);
-            }
+            let scores = new Map();
             for (let i = 0; i < query.size(); i++) {
                 let term = dictionary.getWordIndex(query.getTerm(i).getName());
                 if (term != -1) {
@@ -188,18 +185,21 @@
                         let tf = positionalPosting.size();
                         let df = this.positionalIndex.get(term).size();
                         if (tf > 0 && df > 0) {
-                            scores[docID] += VectorSpaceModel_1.VectorSpaceModel.weighting(tf, df, N, termWeighting, documentWeighting);
+                            let score = VectorSpaceModel_1.VectorSpaceModel.weighting(tf, df, N, termWeighting, documentWeighting);
+                            if (scores.has(docID)) {
+                                scores.set(docID, scores.get(docID) + score);
+                            }
+                            else {
+                                scores.set(docID, score);
+                            }
                         }
                     }
                 }
             }
-            for (let i = 0; i < N; i++) {
-                scores[i] /= documents[i].getSize();
-                if (scores[i] > 0.0) {
-                    result.add(i, scores[i]);
-                }
+            for (let docID of scores.keys()) {
+                result.add(docID, scores.get(docID));
             }
-            result.sort();
+            result.getBest(documentsReturned);
             return result;
         }
     }

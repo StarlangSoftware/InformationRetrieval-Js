@@ -13,12 +13,11 @@ import {TermOccurrence} from "../Index/TermOccurrence";
 import {Word} from "nlptoolkit-dictionary/dist/Dictionary/Word";
 import {Query} from "../Query/Query";
 import {RetrievalType} from "../Query/RetrievalType";
-import {TermWeighting} from "../Index/TermWeighting";
-import {DocumentWeighting} from "./DocumentWeighting";
 import {QueryResult} from "../Query/QueryResult";
 import {Term} from "../Index/Term";
 import {PositionalPostingList} from "../Index/PositionalPostingList";
 import {PostingList} from "../Index/PostingList";
+import {SearchParameter} from "../Query/SearchParameter";
 
 export class Collection {
 
@@ -612,17 +611,20 @@ export class Collection {
     }
 
     searchCollection(query: Query,
-                     retrievalType: RetrievalType,
-                     termWeighting: TermWeighting = TermWeighting.NATURAL,
-                     documentWeighting: DocumentWeighting = DocumentWeighting.NO_IDF): QueryResult{
+                     searchParameter: SearchParameter): QueryResult{
         switch (this.indexType){
             case IndexType.INCIDENCE_MATRIX:
                 return this.incidenceMatrix.search(query, this.dictionary)
             case IndexType.INVERTED_INDEX:
-                switch (retrievalType){
+                switch (searchParameter.getRetrievalType()){
                     case    RetrievalType.BOOLEAN:return this.invertedIndex.search(query, this.dictionary)
                     case RetrievalType.POSITIONAL:return this.positionalIndex.positionalSearch(query, this.dictionary)
-                    case     RetrievalType.RANKED:return this.positionalIndex.rankedSearch(query, this.dictionary, this.documents, termWeighting, documentWeighting)
+                    case     RetrievalType.RANKED:return this.positionalIndex.rankedSearch(query,
+                        this.dictionary,
+                        this.documents,
+                        searchParameter.getTermWeighting(),
+                        searchParameter.getDocumentWeighting(),
+                        searchParameter.getDocumentsRetrieved())
                 }
         }
         return new QueryResult()

@@ -1,4 +1,5 @@
 import {QueryResultItem} from "./QueryResultItem";
+import {MinHeap} from "nlptoolkit-datastructure/dist/heap/MinHeap";
 
 export class QueryResult {
 
@@ -15,12 +16,27 @@ export class QueryResult {
         return this.items
     }
 
-    queryResultItemComparator = (resultA: QueryResultItem, resultB: QueryResultItem) =>
-        (resultA.getScore() > resultB.getScore() ? -1 :
-            (resultA.getScore() < resultB.getScore() ? 1 : 0))
+    compare(resultA: QueryResultItem, resultB: QueryResultItem): number {
+        if (resultA.getScore() > resultB.getScore()){
+            return -1
+        } else {
+            if (resultA.getScore() < resultB.getScore()){
+                return 1
+            } else {
+                return 0
+            }
+        }
+    }
 
-    sort(){
-        this.items.sort(this.queryResultItemComparator)
+    getBest(K: number){
+        let minHeap: MinHeap<QueryResultItem> = new MinHeap<QueryResultItem>(2 * K, this.compare);
+        for (const queryResultItem of this.items){
+            minHeap.insert(queryResultItem)
+        }
+        this.items = []
+        for (let i = 0; i < K && !minHeap.isEmpty(); i++){
+            this.items.push(minHeap.delete())
+        }
     }
 
 }

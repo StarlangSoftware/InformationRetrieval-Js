@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Index/TermWeighting", "./DocumentWeighting", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList"], factory);
+        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -22,8 +22,6 @@
     const TermOccurrence_1 = require("../Index/TermOccurrence");
     const Word_1 = require("nlptoolkit-dictionary/dist/Dictionary/Word");
     const RetrievalType_1 = require("../Query/RetrievalType");
-    const TermWeighting_1 = require("../Index/TermWeighting");
-    const DocumentWeighting_1 = require("./DocumentWeighting");
     const QueryResult_1 = require("../Query/QueryResult");
     const PositionalPostingList_1 = require("../Index/PositionalPostingList");
     const PostingList_1 = require("../Index/PostingList");
@@ -587,15 +585,15 @@
             this.triGramDictionary = new TermDictionary_1.TermDictionary(this.comparator, terms);
             this.triGramIndex = new NGramIndex_1.NGramIndex(this.triGramDictionary, terms, this.comparator);
         }
-        searchCollection(query, retrievalType, termWeighting = TermWeighting_1.TermWeighting.NATURAL, documentWeighting = DocumentWeighting_1.DocumentWeighting.NO_IDF) {
+        searchCollection(query, searchParameter) {
             switch (this.indexType) {
                 case IndexType_1.IndexType.INCIDENCE_MATRIX:
                     return this.incidenceMatrix.search(query, this.dictionary);
                 case IndexType_1.IndexType.INVERTED_INDEX:
-                    switch (retrievalType) {
+                    switch (searchParameter.getRetrievalType()) {
                         case RetrievalType_1.RetrievalType.BOOLEAN: return this.invertedIndex.search(query, this.dictionary);
                         case RetrievalType_1.RetrievalType.POSITIONAL: return this.positionalIndex.positionalSearch(query, this.dictionary);
-                        case RetrievalType_1.RetrievalType.RANKED: return this.positionalIndex.rankedSearch(query, this.dictionary, this.documents, termWeighting, documentWeighting);
+                        case RetrievalType_1.RetrievalType.RANKED: return this.positionalIndex.rankedSearch(query, this.dictionary, this.documents, searchParameter.getTermWeighting(), searchParameter.getDocumentWeighting(), searchParameter.getDocumentsRetrieved());
                     }
             }
             return new QueryResult_1.QueryResult();

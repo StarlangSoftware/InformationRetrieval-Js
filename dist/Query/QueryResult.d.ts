@@ -4,6 +4,6 @@ export declare class QueryResult {
     constructor();
     add(docId: number, score?: number): void;
     getItems(): Array<QueryResultItem>;
-    queryResultItemComparator: (resultA: QueryResultItem, resultB: QueryResultItem) => 1 | -1 | 0;
-    sort(): void;
+    compare(resultA: QueryResultItem, resultB: QueryResultItem): number;
+    getBest(K: number): void;
 }

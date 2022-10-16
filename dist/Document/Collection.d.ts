@@ -5,10 +5,8 @@ import { Parameter } from "./Parameter";
 import { TermType } from "../Index/TermType";
 import { TermOccurrence } from "../Index/TermOccurrence";
 import { Query } from "../Query/Query";
-import { RetrievalType } from "../Query/RetrievalType";
-import { TermWeighting } from "../Index/TermWeighting";
-import { DocumentWeighting } from "./DocumentWeighting";
 import { QueryResult } from "../Query/QueryResult";
+import { SearchParameter } from "../Query/SearchParameter";
 export declare class Collection {
     private readonly indexType;
     private dictionary;
@@ -53,5 +51,5 @@ export declare class Collection {
     constructDictionaryAndPositionalIndexInDisk(termType: TermType): void;
     constructPositionalIndexInDisk(dictionary: TermDictionary, termType: TermType): void;
     constructNGramIndex(): void;
-    searchCollection(query: Query, retrievalType: RetrievalType, termWeighting?: TermWeighting, documentWeighting?: DocumentWeighting): QueryResult;
+    searchCollection(query: Query, searchParameter: SearchParameter): QueryResult;
 }

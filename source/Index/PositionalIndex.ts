@@ -176,13 +176,11 @@ export class PositionalIndex {
                  dictionary: TermDictionary,
                  documents: Array<Document>,
                  termWeighting: TermWeighting,
-                 documentWeighting: DocumentWeighting): QueryResult{
+                 documentWeighting: DocumentWeighting,
+                 documentsReturned: number): QueryResult{
         let N = documents.length
         let result = new QueryResult()
-        let scores = new Array<number>()
-        for (let i = 0; i < N; i++){
-            scores.push(0.0)
-        }
+        let scores = new Map<number, number>()
         for (let i = 0; i < query.size(); i++){
             let term = dictionary.getWordIndex(query.getTerm(i).getName())
             if (term != -1){
@@ -193,18 +191,20 @@ export class PositionalIndex {
                     let tf = positionalPosting.size();
                     let df = this.positionalIndex.get(term).size();
                     if (tf > 0 && df > 0){
-                        scores[docID] += VectorSpaceModel.weighting(tf, df, N, termWeighting, documentWeighting)
+                        let score = VectorSpaceModel.weighting(tf, df, N, termWeighting, documentWeighting)
+                        if (scores.has(docID)){
+                            scores.set(docID, scores.get(docID) + score)
+                        } else {
+                            scores.set(docID, score)
+                        }
                     }
                 }
             }
         }
-        for (let i = 0; i < N; i++){
-            scores[i] /= documents[i].getSize()
-            if (scores[i] > 0.0){
-                result.add(i, scores[i])
-            }
+        for (let docID of scores.keys()){
+            result.add(docID, scores.get(docID))
         }
-        result.sort()
+        result.getBest(documentsReturned)
         return result
     }
 }
