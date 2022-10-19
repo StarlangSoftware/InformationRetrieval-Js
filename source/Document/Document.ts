@@ -7,6 +7,8 @@ import {
 import {Corpus} from "nlptoolkit-corpus/dist/Corpus";
 import {Sentence} from "nlptoolkit-corpus/dist/Sentence";
 import {Word} from "nlptoolkit-dictionary/dist/Dictionary/Word";
+import {DocumentType} from "./DocumentType";
+import {CategoryHierarchy} from "./CategoryHierarchy";
 
 export class Document {
 
@@ -14,16 +16,38 @@ export class Document {
     private readonly fileName: string
     private readonly docId: number
     private size: number = 0
+    private documentType: DocumentType
+    private categoryHierarchy: CategoryHierarchy
 
-    constructor(absoluteFileName: string, fileName: string, docId: number) {
+    constructor(documentType: DocumentType, absoluteFileName: string, fileName: string, docId: number) {
         this.docId = docId
         this.absoluteFileName = absoluteFileName
         this.fileName = fileName
+        this.documentType = documentType
     }
 
     loadDocument(): DocumentText{
-        let documentText = new DocumentText(this.absoluteFileName, new TurkishSplitter())
-        this.size = documentText.numberOfWords()
+        let documentText
+        switch (this.documentType) {
+            case DocumentType.NORMAL:
+                documentText = new DocumentText(this.absoluteFileName, new TurkishSplitter())
+                this.size = documentText.numberOfWords()
+                break;
+            case DocumentType.CATEGORICAL:
+                let corpus = new Corpus(this.absoluteFileName)
+                if (corpus.sentenceCount() >= 2){
+                    this.categoryHierarchy = new CategoryHierarchy(corpus.getSentence(0).toString())
+                    documentText = new DocumentText()
+                    let sentences = new TurkishSplitter().split(corpus.getSentence(1).toString())
+                    for (let sentence of sentences){
+                        documentText.addSentence(sentence)
+                    }
+                    this.size = documentText.numberOfWords()
+                } else {
+                    return null
+                }
+                break;
+        }
         return documentText
     }
 
@@ -61,5 +85,13 @@ export class Document {
 
     setSize(size: number){
         this.size = size
+    }
+
+    setCategoryHierarchy(categoryHierarchy: string){
+        this.categoryHierarchy = new CategoryHierarchy(categoryHierarchy)
+    }
+
+    getCategoryHierarchy(): CategoryHierarchy{
+        return this.categoryHierarchy
     }
 }

@@ -28,6 +28,8 @@ export declare class Collection {
     size(): number;
     vocabularySize(): number;
     save(): void;
+    saveCategories(): void;
+    loadCategories(): void;
     constructDictionaryInDisk(): void;
     constructIndexesInDisk(): void;
     constructIndexesInMemory(): void;

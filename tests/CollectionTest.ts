@@ -4,6 +4,7 @@ import {IndexType} from "../dist/Document/IndexType";
 import {Collection} from "../dist/Document/Collection";
 import {Query} from "../dist/Query/Query";
 import {RetrievalType} from "../dist/Query/RetrievalType";
+import {DocumentType} from "../dist/Document/DocumentType";
 import {SearchParameter} from "../dist/Query/SearchParameter";
 
 describe('CollectionTest', function() {
@@ -116,6 +117,16 @@ describe('CollectionTest', function() {
             let collection = new Collection("testCollection2", parameter)
             assert.strictEqual(1, collection.size())
             assert.strictEqual(15, collection.vocabularySize())
+        });
+        it('testCategoricalCollection', function () {
+            let parameter = new Parameter()
+            parameter.setDocumentType(DocumentType.CATEGORICAL)
+            parameter.setLoadIndexesFromFile(true)
+            parameter.setPhraseIndex(false)
+            parameter.setNGramIndex(false)
+            let collection = new Collection("testCollection3", parameter)
+            assert.strictEqual(1000, collection.size())
+            assert.strictEqual(2283, collection.vocabularySize())
         });
     });
 })

@@ -2,6 +2,7 @@ import { IndexType } from "./IndexType";
 import { WordComparator } from "nlptoolkit-dictionary/dist/Dictionary/WordComparator";
 import { MorphologicalDisambiguator } from "nlptoolkit-morphologicaldisambiguation/dist/MorphologicalDisambiguator";
 import { FsmMorphologicalAnalyzer } from "nlptoolkit-morphologicalanalysis/dist/MorphologicalAnalysis/FsmMorphologicalAnalyzer";
+import { DocumentType } from "./DocumentType";
 export declare class Parameter {
     private indexType;
     private wordComparator;
@@ -17,6 +18,7 @@ export declare class Parameter {
     private limitDocumentsLoaded;
     private documentLimit;
     private wordLimit;
+    private documentType;
     constructor();
     getIndexType(): IndexType;
     getWordComparator(): WordComparator;
@@ -46,4 +48,6 @@ export declare class Parameter {
     setDocumentLimit(documentLimit: number): void;
     setConstructDictionaryInDisk(constructDictionaryInDisk: boolean): void;
     setWordLimit(wordLimit: number): void;
+    getDocumentType(): DocumentType;
+    setDocumentType(documentType: DocumentType): void;
 }

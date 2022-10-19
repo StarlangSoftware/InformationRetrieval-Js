@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList"], factory);
+        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList", "./DocumentType"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -25,6 +25,7 @@
     const QueryResult_1 = require("../Query/QueryResult");
     const PositionalPostingList_1 = require("../Index/PositionalPostingList");
     const PostingList_1 = require("../Index/PostingList");
+    const DocumentType_1 = require("./DocumentType");
     class Collection {
         constructor(directory, parameter) {
             this.documents = new Array();
@@ -51,13 +52,16 @@
             while (i < files.length && j < fileLimit) {
                 let file = files[i];
                 if (file.endsWith(".txt")) {
-                    let document = new Document_1.Document(directory + "/" + file, file, j);
+                    let document = new Document_1.Document(parameter.getDocumentType(), directory + "/" + file, file, j);
                     this.documents.push(document);
                     j++;
                 }
                 i++;
             }
             if (parameter.loadIndexesFromFile()) {
+                if (parameter.getDocumentType() == DocumentType_1.DocumentType.CATEGORICAL) {
+                    this.loadCategories();
+                }
                 this.dictionary = new TermDictionary_1.TermDictionary(this.comparator, directory);
                 this.invertedIndex = new InvertedIndex_1.InvertedIndex(directory);
                 if (parameter.constructPositionalIndex()) {
@@ -117,6 +121,26 @@
                     this.triGramDictionary.save(this.name + "-triGram");
                     this.biGramIndex.save(this.name + "-biGram");
                     this.triGramIndex.save(this.name + "-triGram");
+                }
+            }
+            if (this.parameter.getDocumentType() == DocumentType_1.DocumentType.CATEGORICAL) {
+                this.saveCategories();
+            }
+        }
+        saveCategories() {
+            let output = "";
+            for (let document of this.documents) {
+                output = output + document.getDocId() + "\t" + document.getCategoryHierarchy().toString() + "\n";
+            }
+            fs.writeFileSync(this.name + "-categories.txt", output, "utf-8");
+        }
+        loadCategories() {
+            let lines = fs.readFileSync(this.name + "-categories.txt", "utf-8").split('\n');
+            for (let line of lines) {
+                if (line != "") {
+                    let items = line.split("\t");
+                    let docId = parseInt(items[0]);
+                    this.documents[docId].setCategoryHierarchy(items[1]);
                 }
             }
         }

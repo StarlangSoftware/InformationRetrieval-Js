@@ -4,6 +4,7 @@ import {MorphologicalDisambiguator} from "nlptoolkit-morphologicaldisambiguation
 import {
     FsmMorphologicalAnalyzer
 } from "nlptoolkit-morphologicalanalysis/dist/MorphologicalAnalysis/FsmMorphologicalAnalyzer";
+import {DocumentType} from "./DocumentType";
 
 export class Parameter {
 
@@ -21,6 +22,7 @@ export class Parameter {
     private limitDocumentsLoaded: boolean = false
     private documentLimit: number = 1000
     private wordLimit: number = 10000
+    private documentType: DocumentType = DocumentType.NORMAL
 
     constructor() {
     }
@@ -138,5 +140,13 @@ export class Parameter {
 
     setWordLimit(wordLimit: number) {
         this.wordLimit = wordLimit
+    }
+
+    getDocumentType(): DocumentType{
+        return this.documentType
+    }
+
+    setDocumentType(documentType: DocumentType){
+        this.documentType = documentType
     }
 }

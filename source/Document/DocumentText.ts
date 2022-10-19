@@ -6,7 +6,7 @@ import {Word} from "nlptoolkit-dictionary/dist/Dictionary/Word";
 
 export class DocumentText extends Corpus{
 
-    constructor(fileName: string, sentenceSplitter: SentenceSplitter = undefined) {
+    constructor(fileName: string = undefined, sentenceSplitter: SentenceSplitter = undefined) {
         super(fileName, sentenceSplitter);
     }
 

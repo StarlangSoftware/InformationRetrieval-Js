@@ -15,7 +15,7 @@
     const TermOccurrence_1 = require("../Index/TermOccurrence");
     const Word_1 = require("nlptoolkit-dictionary/dist/Dictionary/Word");
     class DocumentText extends Corpus_1.Corpus {
-        constructor(fileName, sentenceSplitter = undefined) {
+        constructor(fileName = undefined, sentenceSplitter = undefined) {
             super(fileName, sentenceSplitter);
         }
         constructDistinctWordList(termType) {
