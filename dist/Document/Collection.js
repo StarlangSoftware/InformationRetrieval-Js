@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList", "./DocumentType"], factory);
+        define(["require", "exports", "./IndexType", "../Index/TermDictionary", "../Index/IncidenceMatrix", "../Index/NGramIndex", "../Index/InvertedIndex", "../Index/PositionalIndex", "./Document", "../Index/TermType", "fs", "../Index/TermOccurrence", "nlptoolkit-dictionary/dist/Dictionary/Word", "../Query/RetrievalType", "../Query/QueryResult", "../Index/PositionalPostingList", "../Index/PostingList", "./DocumentType", "../Index/CategoryTree"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -26,6 +26,7 @@
     const PositionalPostingList_1 = require("../Index/PositionalPostingList");
     const PostingList_1 = require("../Index/PostingList");
     const DocumentType_1 = require("./DocumentType");
+    const CategoryTree_1 = require("../Index/CategoryTree");
     class Collection {
         constructor(directory, parameter) {
             this.documents = new Array();
@@ -95,6 +96,9 @@
                     }
                 }
             }
+            if (parameter.getDocumentType() == DocumentType_1.DocumentType.CATEGORICAL) {
+                this.positionalIndex.setCategoryCounts(this.documents);
+            }
         }
         size() {
             return this.documents.length;
@@ -130,17 +134,18 @@
         saveCategories() {
             let output = "";
             for (let document of this.documents) {
-                output = output + document.getDocId() + "\t" + document.getCategoryHierarchy().toString() + "\n";
+                output = output + document.getDocId() + "\t" + document.getCategory().toString() + "\n";
             }
             fs.writeFileSync(this.name + "-categories.txt", output, "utf-8");
         }
         loadCategories() {
+            this.categoryTree = new CategoryTree_1.CategoryTree(this.name);
             let lines = fs.readFileSync(this.name + "-categories.txt", "utf-8").split('\n');
             for (let line of lines) {
                 if (line != "") {
                     let items = line.split("\t");
                     let docId = parseInt(items[0]);
-                    this.documents[docId].setCategoryHierarchy(items[1]);
+                    this.documents[docId].setCategory(this.categoryTree, items[1]);
                 }
             }
         }
@@ -200,6 +205,12 @@
                     }
                     if (this.parameter.constructNGramIndex()) {
                         this.constructNGramIndex();
+                    }
+                    if (this.parameter.getDocumentType() == DocumentType_1.DocumentType.CATEGORICAL) {
+                        this.categoryTree = new CategoryTree_1.CategoryTree(this.name);
+                        for (let document of this.documents) {
+                            document.loadCategory(this.categoryTree);
+                        }
                     }
                     break;
             }
@@ -608,6 +619,9 @@
             terms = this.dictionary.constructTermsFromDictionary(3);
             this.triGramDictionary = new TermDictionary_1.TermDictionary(this.comparator, terms);
             this.triGramIndex = new NGramIndex_1.NGramIndex(this.triGramDictionary, terms, this.comparator);
+        }
+        topNString(N) {
+            return this.categoryTree.topNString(this.dictionary, N);
         }
         searchCollection(query, searchParameter) {
             switch (this.indexType) {

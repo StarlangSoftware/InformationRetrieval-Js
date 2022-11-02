@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./DocumentText", "nlptoolkit-corpus/dist/TurkishSplitter", "nlptoolkit-corpus/dist/Corpus", "nlptoolkit-corpus/dist/Sentence", "nlptoolkit-dictionary/dist/Dictionary/Word", "./DocumentType", "./CategoryHierarchy"], factory);
+        define(["require", "exports", "./DocumentText", "nlptoolkit-corpus/dist/TurkishSplitter", "nlptoolkit-corpus/dist/Corpus", "nlptoolkit-corpus/dist/Sentence", "nlptoolkit-dictionary/dist/Dictionary/Word", "./DocumentType"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -16,7 +16,6 @@
     const Sentence_1 = require("nlptoolkit-corpus/dist/Sentence");
     const Word_1 = require("nlptoolkit-dictionary/dist/Dictionary/Word");
     const DocumentType_1 = require("./DocumentType");
-    const CategoryHierarchy_1 = require("./CategoryHierarchy");
     class Document {
         constructor(documentType, absoluteFileName, fileName, docId) {
             this.size = 0;
@@ -35,7 +34,6 @@
                 case DocumentType_1.DocumentType.CATEGORICAL:
                     let corpus = new Corpus_1.Corpus(this.absoluteFileName);
                     if (corpus.sentenceCount() >= 2) {
-                        this.categoryHierarchy = new CategoryHierarchy_1.CategoryHierarchy(corpus.getSentence(0).toString());
                         documentText = new DocumentText_1.DocumentText();
                         let sentences = new TurkishSplitter_1.TurkishSplitter().split(corpus.getSentence(1).toString());
                         for (let sentence of sentences) {
@@ -49,6 +47,14 @@
                     break;
             }
             return documentText;
+        }
+        loadCategory(categoryTree) {
+            if (this.documentType == DocumentType_1.DocumentType.CATEGORICAL) {
+                let corpus = new Corpus_1.Corpus(this.absoluteFileName);
+                if (corpus.sentenceCount() >= 2) {
+                    this.category = categoryTree.addCategoryHierarchy(corpus.getSentence(0).toString());
+                }
+            }
         }
         normalizeDocument(disambiguator, fsm) {
             let corpus = new Corpus_1.Corpus(this.absoluteFileName);
@@ -80,11 +86,14 @@
         setSize(size) {
             this.size = size;
         }
-        setCategoryHierarchy(categoryHierarchy) {
-            this.categoryHierarchy = new CategoryHierarchy_1.CategoryHierarchy(categoryHierarchy);
+        setCategory(categoryTree, category) {
+            this.category = categoryTree.addCategoryHierarchy(category);
         }
-        getCategoryHierarchy() {
-            return this.categoryHierarchy;
+        getCategory() {
+            return this.category.toString();
+        }
+        getCategoryNode() {
+            return this.category;
         }
     }
     exports.Document = Document;

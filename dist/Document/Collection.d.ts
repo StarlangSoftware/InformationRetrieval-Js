@@ -24,6 +24,7 @@ export declare class Collection {
     private readonly comparator;
     private readonly name;
     private parameter;
+    private categoryTree;
     constructor(directory: string, parameter: Parameter);
     size(): number;
     vocabularySize(): number;
@@ -53,5 +54,6 @@ export declare class Collection {
     constructDictionaryAndPositionalIndexInDisk(termType: TermType): void;
     constructPositionalIndexInDisk(dictionary: TermDictionary, termType: TermType): void;
     constructNGramIndex(): void;
+    topNString(N: number): string;
     searchCollection(query: Query, searchParameter: SearchParameter): QueryResult;
 }

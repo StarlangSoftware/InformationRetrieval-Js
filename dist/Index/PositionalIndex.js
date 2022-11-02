@@ -171,6 +171,16 @@
                 doc.setSize(sizes[doc.getDocId()]);
             }
         }
+        setCategoryCounts(documents) {
+            for (let termId of this.positionalIndex.keys()) {
+                let positionalPostingList = this.positionalIndex.get(termId);
+                for (let j = 0; j < positionalPostingList.size(); j++) {
+                    let positionalPosting = positionalPostingList.get(j);
+                    let docId = positionalPosting.getDocId();
+                    documents[docId].getCategoryNode().addCounts(termId, positionalPosting.size());
+                }
+            }
+        }
         rankedSearch(query, dictionary, documents, termWeighting, documentWeighting, documentsReturned) {
             let N = documents.length;
             let result = new QueryResult_1.QueryResult();

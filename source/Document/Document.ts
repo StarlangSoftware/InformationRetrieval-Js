@@ -8,7 +8,8 @@ import {Corpus} from "nlptoolkit-corpus/dist/Corpus";
 import {Sentence} from "nlptoolkit-corpus/dist/Sentence";
 import {Word} from "nlptoolkit-dictionary/dist/Dictionary/Word";
 import {DocumentType} from "./DocumentType";
-import {CategoryHierarchy} from "./CategoryHierarchy";
+import {CategoryNode} from "../Index/CategoryNode";
+import {CategoryTree} from "../Index/CategoryTree";
 
 export class Document {
 
@@ -16,8 +17,8 @@ export class Document {
     private readonly fileName: string
     private readonly docId: number
     private size: number = 0
-    private documentType: DocumentType
-    private categoryHierarchy: CategoryHierarchy
+    private readonly documentType: DocumentType
+    private category: CategoryNode
 
     constructor(documentType: DocumentType, absoluteFileName: string, fileName: string, docId: number) {
         this.docId = docId
@@ -36,7 +37,6 @@ export class Document {
             case DocumentType.CATEGORICAL:
                 let corpus = new Corpus(this.absoluteFileName)
                 if (corpus.sentenceCount() >= 2){
-                    this.categoryHierarchy = new CategoryHierarchy(corpus.getSentence(0).toString())
                     documentText = new DocumentText()
                     let sentences = new TurkishSplitter().split(corpus.getSentence(1).toString())
                     for (let sentence of sentences){
@@ -49,6 +49,15 @@ export class Document {
                 break;
         }
         return documentText
+    }
+
+    loadCategory(categoryTree: CategoryTree){
+        if (this.documentType == DocumentType.CATEGORICAL){
+            let corpus = new Corpus(this.absoluteFileName)
+            if (corpus.sentenceCount() >= 2) {
+                this.category = categoryTree.addCategoryHierarchy(corpus.getSentence(0).toString())
+            }
+        }
     }
 
     normalizeDocument(disambiguator: MorphologicalDisambiguator, fsm: FsmMorphologicalAnalyzer){
@@ -87,11 +96,15 @@ export class Document {
         this.size = size
     }
 
-    setCategoryHierarchy(categoryHierarchy: string){
-        this.categoryHierarchy = new CategoryHierarchy(categoryHierarchy)
+    setCategory(categoryTree: CategoryTree, category: string){
+        this.category = categoryTree.addCategoryHierarchy(category)
     }
 
-    getCategoryHierarchy(): CategoryHierarchy{
-        return this.categoryHierarchy
+    getCategory(): string{
+        return this.category.toString()
+    }
+
+    getCategoryNode(): CategoryNode{
+        return this.category
     }
 }

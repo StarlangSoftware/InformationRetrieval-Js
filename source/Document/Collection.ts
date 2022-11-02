@@ -19,6 +19,7 @@ import {PositionalPostingList} from "../Index/PositionalPostingList";
 import {PostingList} from "../Index/PostingList";
 import {SearchParameter} from "../Query/SearchParameter";
 import {DocumentType} from "./DocumentType";
+import {CategoryTree} from "../Index/CategoryTree";
 
 export class Collection {
 
@@ -38,6 +39,7 @@ export class Collection {
     private readonly comparator: WordComparator
     private readonly name: string
     private parameter: Parameter
+    private categoryTree: CategoryTree
 
     constructor(directory: string, parameter: Parameter) {
         this.name = directory;
@@ -95,6 +97,9 @@ export class Collection {
                 }
             }
         }
+        if (parameter.getDocumentType() == DocumentType.CATEGORICAL){
+            this.positionalIndex.setCategoryCounts(this.documents);
+        }
     }
 
     size(): number{
@@ -134,18 +139,19 @@ export class Collection {
     saveCategories(){
         let output = ""
         for (let document of this.documents){
-            output = output + document.getDocId() + "\t" + document.getCategoryHierarchy().toString() + "\n"
+            output = output + document.getDocId() + "\t" + document.getCategory().toString() + "\n"
         }
         fs.writeFileSync(this.name + "-categories.txt", output,"utf-8")
     }
 
     loadCategories(){
+        this.categoryTree = new CategoryTree(this.name)
         let lines = fs.readFileSync(this.name + "-categories.txt", "utf-8").split('\n')
         for (let line of lines){
             if (line != ""){
                 let items = line.split("\t")
                 let docId = parseInt(items[0])
-                this.documents[docId].setCategoryHierarchy(items[1])
+                this.documents[docId].setCategory(this.categoryTree, items[1])
             }
         }
     }
@@ -208,6 +214,12 @@ export class Collection {
                 }
                 if (this.parameter.constructNGramIndex()){
                     this.constructNGramIndex()
+                }
+                if (this.parameter.getDocumentType() == DocumentType.CATEGORICAL){
+                    this.categoryTree = new CategoryTree(this.name);
+                    for (let document of this.documents){
+                        document.loadCategory(this.categoryTree);
+                    }
                 }
                 break;
         }
@@ -634,6 +646,10 @@ export class Collection {
         terms = this.dictionary.constructTermsFromDictionary(3)
         this.triGramDictionary = new TermDictionary(this.comparator, terms)
         this.triGramIndex = new NGramIndex(this.triGramDictionary, terms, this.comparator)
+    }
+
+    topNString(N: number): string{
+        return this.categoryTree.topNString(this.dictionary, N)
     }
 
     searchCollection(query: Query,

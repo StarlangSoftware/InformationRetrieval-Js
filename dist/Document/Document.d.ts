@@ -3,22 +3,25 @@ import { MorphologicalDisambiguator } from "nlptoolkit-morphologicaldisambiguati
 import { FsmMorphologicalAnalyzer } from "nlptoolkit-morphologicalanalysis/dist/MorphologicalAnalysis/FsmMorphologicalAnalyzer";
 import { Corpus } from "nlptoolkit-corpus/dist/Corpus";
 import { DocumentType } from "./DocumentType";
-import { CategoryHierarchy } from "./CategoryHierarchy";
+import { CategoryNode } from "../Index/CategoryNode";
+import { CategoryTree } from "../Index/CategoryTree";
 export declare class Document {
     private readonly absoluteFileName;
     private readonly fileName;
     private readonly docId;
     private size;
-    private documentType;
-    private categoryHierarchy;
+    private readonly documentType;
+    private category;
     constructor(documentType: DocumentType, absoluteFileName: string, fileName: string, docId: number);
     loadDocument(): DocumentText;
+    loadCategory(categoryTree: CategoryTree): void;
     normalizeDocument(disambiguator: MorphologicalDisambiguator, fsm: FsmMorphologicalAnalyzer): Corpus;
     getDocId(): number;
     getFileName(): string;
     getAbsoluteFileName(): string;
     getSize(): number;
     setSize(size: number): void;
-    setCategoryHierarchy(categoryHierarchy: string): void;
-    getCategoryHierarchy(): CategoryHierarchy;
+    setCategory(categoryTree: CategoryTree, category: string): void;
+    getCategory(): string;
+    getCategoryNode(): CategoryNode;
 }
