@@ -45,27 +45,27 @@ export class VectorSpaceModel {
               documentSize: number,
               termWeighting: TermWeighting,
               documentWeighting: DocumentWeighting): number{
-        let multiplier1 = 1, multiplier2 = 1
+        let multiplier1 = 1.0, multiplier2 = 1.0
         switch (termWeighting){
             case   TermWeighting.NATURAL:
                 multiplier1 = termFrequency
                 break;
             case TermWeighting.LOGARITHM:
                 if (termFrequency > 0)
-                    multiplier1 = 1 + Math.log(termFrequency)
+                    multiplier1 = 1.0 + Math.log(termFrequency)
                 else
-                    multiplier1 = 0
+                    multiplier1 = 0.0
                 break;
             case TermWeighting.BOOLE:
                 if (termFrequency > 0){
-                    multiplier1 = 1
+                    multiplier1 = 1.0
                 } else {
-                    multiplier1 = 0
+                    multiplier1 = 0.0
                 }
         }
         switch (documentWeighting){
             case DocumentWeighting.NO_IDF:
-                multiplier2 = 1
+                multiplier2 = 1.0
                 break;
             case DocumentWeighting.IDF:
                 multiplier2 = Math.log(documentSize / documentFrequency)
