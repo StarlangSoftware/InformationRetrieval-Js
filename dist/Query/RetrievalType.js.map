@@ -1,1 +1,1 @@
-{"version":3,"file":"RetrievalType.js","sourceRoot":"","sources":["../../source/Query/RetrievalType.ts"],"names":[],"mappings":";;;;;;;;;;;;IAAA,IAAY,aAEX;IAFD,WAAY,aAAa;QACrB,uDAAO,CAAA;QAAE,6DAAU,CAAA;QAAE,qDAAM,CAAA;IAC/B,CAAC,EAFW,aAAa,GAAb,qBAAa,KAAb,qBAAa,QAExB"}
+{"version":3,"file":"RetrievalType.js","sourceRoot":"","sources":["../../source/Query/RetrievalType.ts"],"names":[],"mappings":";;;;;;;;;;;;IAAA,IAAY,aAEX;IAFD,WAAY,aAAa;QACrB,uDAAO,CAAA;QAAE,6DAAU,CAAA;QAAE,qDAAM,CAAA;QAAE,2DAAS,CAAA;IAC1C,CAAC,EAFW,aAAa,GAAb,qBAAa,KAAb,qBAAa,QAExB"}

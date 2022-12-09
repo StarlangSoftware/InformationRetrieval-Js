@@ -22,12 +22,11 @@
             this.phraseIndex = true;
             this.positionalIndex = true;
             this.nGramIndex = true;
-            this.indexInDisk = false;
-            this.dictionaryInDisk = false;
             this.limitDocumentsLoaded = false;
             this.documentLimit = 1000;
             this.wordLimit = 10000;
             this.documentType = DocumentType_1.DocumentType.NORMAL;
+            this.representativeCount = 10;
         }
         getIndexType() {
             return this.indexType;
@@ -56,20 +55,17 @@
         constructNGramIndex() {
             return this.nGramIndex;
         }
-        constructIndexInDisk() {
-            return this.indexInDisk;
-        }
         limitNumberOfDocumentsLoaded() {
             return this.limitDocumentsLoaded;
         }
         getDocumentLimit() {
             return this.documentLimit;
         }
-        constructDictionaryInDisk() {
-            return this.dictionaryInDisk;
-        }
         getWordLimit() {
             return this.wordLimit;
+        }
+        getRepresentativeCount() {
+            return this.representativeCount;
         }
         setIndexType(indexType) {
             this.indexType = indexType;
@@ -98,23 +94,17 @@
         setNGramIndex(nGramIndex) {
             this.nGramIndex = nGramIndex;
         }
-        setConstructIndexInDisk(constructIndexInDisk) {
-            this.indexInDisk = constructIndexInDisk;
-        }
         setLimitNumberOfDocumentsLoaded(limitNumberOfDocumentsLoaded) {
             this.limitDocumentsLoaded = limitNumberOfDocumentsLoaded;
         }
         setDocumentLimit(documentLimit) {
             this.documentLimit = documentLimit;
         }
-        setConstructDictionaryInDisk(constructDictionaryInDisk) {
-            this.dictionaryInDisk = constructDictionaryInDisk;
-            if (constructDictionaryInDisk) {
-                this.indexInDisk = true;
-            }
-        }
         setWordLimit(wordLimit) {
             this.wordLimit = wordLimit;
+        }
+        setRepresentativeCount(representativeCount) {
+            this.representativeCount = representativeCount;
         }
         getDocumentType() {
             return this.documentType;

@@ -1,3 +1,3 @@
 export enum RetrievalType {
-    BOOLEAN, POSITIONAL, RANKED
+    BOOLEAN, POSITIONAL, RANKED, ATTRIBUTE
 }

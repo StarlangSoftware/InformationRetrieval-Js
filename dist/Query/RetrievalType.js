@@ -15,6 +15,7 @@
         RetrievalType[RetrievalType["BOOLEAN"] = 0] = "BOOLEAN";
         RetrievalType[RetrievalType["POSITIONAL"] = 1] = "POSITIONAL";
         RetrievalType[RetrievalType["RANKED"] = 2] = "RANKED";
+        RetrievalType[RetrievalType["ATTRIBUTE"] = 3] = "ATTRIBUTE";
     })(RetrievalType = exports.RetrievalType || (exports.RetrievalType = {}));
 });
 //# sourceMappingURL=RetrievalType.js.map

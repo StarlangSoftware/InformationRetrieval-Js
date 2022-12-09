@@ -17,12 +17,11 @@ export class Parameter {
     private phraseIndex: boolean = true
     private positionalIndex: boolean = true
     private nGramIndex: boolean = true
-    private indexInDisk: boolean = false
-    private dictionaryInDisk: boolean = false
     private limitDocumentsLoaded: boolean = false
     private documentLimit: number = 1000
     private wordLimit: number = 10000
     private documentType: DocumentType = DocumentType.NORMAL
+    private representativeCount: number = 10
 
     constructor() {
     }
@@ -63,10 +62,6 @@ export class Parameter {
         return this.nGramIndex
     }
 
-    constructIndexInDisk(): boolean {
-        return this.indexInDisk
-    }
-
     limitNumberOfDocumentsLoaded(): boolean {
         return this.limitDocumentsLoaded
     }
@@ -75,12 +70,12 @@ export class Parameter {
         return this.documentLimit
     }
 
-    constructDictionaryInDisk(): boolean {
-        return this.dictionaryInDisk
-    }
-
     getWordLimit(): number {
         return this.wordLimit
+    }
+
+    getRepresentativeCount(): number {
+        return this.representativeCount
     }
 
     setIndexType(indexType: IndexType) {
@@ -119,10 +114,6 @@ export class Parameter {
         this.nGramIndex = nGramIndex
     }
 
-    setConstructIndexInDisk(constructIndexInDisk: boolean) {
-        this.indexInDisk = constructIndexInDisk
-    }
-
     setLimitNumberOfDocumentsLoaded(limitNumberOfDocumentsLoaded: boolean) {
         this.limitDocumentsLoaded = limitNumberOfDocumentsLoaded
     }
@@ -131,15 +122,12 @@ export class Parameter {
         this.documentLimit = documentLimit
     }
 
-    setConstructDictionaryInDisk(constructDictionaryInDisk: boolean) {
-        this.dictionaryInDisk = constructDictionaryInDisk
-        if (constructDictionaryInDisk) {
-            this.indexInDisk = true
-        }
-    }
-
     setWordLimit(wordLimit: number) {
         this.wordLimit = wordLimit
+    }
+
+    setRepresentativeCount(representativeCount: number) {
+        this.representativeCount = representativeCount
     }
 
     getDocumentType(): DocumentType{

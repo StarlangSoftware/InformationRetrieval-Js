@@ -4,13 +4,14 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./CategoryNode"], factory);
+        define(["require", "exports", "./CategoryNode", "../Query/CategoryDeterminationType"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CategoryTree = void 0;
     const CategoryNode_1 = require("./CategoryNode");
+    const CategoryDeterminationType_1 = require("../Query/CategoryDeterminationType");
     class CategoryTree {
         constructor(rootName) {
             this.root = new CategoryNode_1.CategoryNode(rootName, null);
@@ -27,21 +28,20 @@
             }
             return current;
         }
-        topNString(dictionary, N) {
-            let queue = new Array();
-            queue.push(this.root);
-            let result = "";
-            while (queue.length > 0) {
-                let node = queue[0];
-                queue.splice(0, 1);
-                if (node != this.root) {
-                    result += node.topNString(dictionary, N) + "\n";
-                }
-                for (let child of node.getChildren()) {
-                    queue.push(child);
-                }
+        getCategories(query, dictionary, categoryDeterminationType) {
+            let result = new Array();
+            switch (categoryDeterminationType) {
+                case CategoryDeterminationType_1.CategoryDeterminationType.KEYWORD:
+                    this.root.getCategoriesWithKeyword(query, result);
+                    break;
+                case CategoryDeterminationType_1.CategoryDeterminationType.COSINE:
+                    this.root.getCategoriesWithCosine(query, dictionary, result);
+                    break;
             }
             return result;
+        }
+        setRepresentativeCount(representativeCount) {
+            this.root.setRepresentativeCount(representativeCount);
         }
     }
     exports.CategoryTree = CategoryTree;

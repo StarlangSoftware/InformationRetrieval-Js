@@ -12,8 +12,33 @@ export class QueryResult {
         this.items.push(new QueryResultItem(docId, score))
     }
 
+    size(): number{
+        return this.items.length
+    }
+
     getItems(): Array<QueryResultItem>{
         return this.items
+    }
+
+    intersection(queryResult: QueryResult): QueryResult{
+        let result = new QueryResult()
+        let i = 0, j = 0
+        while (i < this.size() && j < queryResult.size()){
+            let item1 = this.items[i]
+            let item2 = queryResult.items[j]
+            if (item1.getDocId() == item2.getDocId()){
+                result.add(item1.getDocId())
+                i++
+                j++
+            } else {
+                if (item1.getDocId() < item2.getDocId()){
+                    i++
+                } else {
+                    j++
+                }
+            }
+        }
+        return result
     }
 
     compare(resultA: QueryResultItem, resultB: QueryResultItem): number {

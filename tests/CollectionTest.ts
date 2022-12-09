@@ -1,25 +1,26 @@
 import * as assert from "assert";
 import {Parameter} from "../dist/Document/Parameter";
 import {IndexType} from "../dist/Document/IndexType";
-import {Collection} from "../dist/Document/Collection";
 import {Query} from "../dist/Query/Query";
 import {RetrievalType} from "../dist/Query/RetrievalType";
 import {DocumentType} from "../dist/Document/DocumentType";
 import {SearchParameter} from "../dist/Query/SearchParameter";
+import {MemoryCollection} from "../dist/Document/MemoryCollection";
+import {FocusType} from "../dist/Query/FocusType";
 
 describe('CollectionTest', function() {
     describe('CollectionTest', function () {
         it('testIncidenceMatrixSmall', function () {
             let parameter = new Parameter()
             parameter.setIndexType(IndexType.INCIDENCE_MATRIX)
-            let collection = new Collection("testCollection2", parameter)
+            let collection = new MemoryCollection("testCollection2", parameter)
             assert.strictEqual(2, collection.size())
             assert.strictEqual(26, collection.vocabularySize())
         });
         it('testIncidenceMatrixQuery', function () {
             let parameter = new Parameter()
             parameter.setIndexType(IndexType.INCIDENCE_MATRIX)
-            let collection = new Collection("testCollection2", parameter)
+            let collection = new MemoryCollection("testCollection2", parameter)
             let query = new Query("Brutus")
             let searchParameter = new SearchParameter()
             searchParameter.setRetrievalType(RetrievalType.BOOLEAN)
@@ -41,7 +42,7 @@ describe('CollectionTest', function() {
         it('testInvertedIndexBooleanQuery', function () {
             let parameter = new Parameter()
             parameter.setNGramIndex(true)
-            let collection = new Collection("testCollection2", parameter)
+            let collection = new MemoryCollection("testCollection2", parameter)
             let query = new Query("Brutus")
             let searchParameter = new SearchParameter()
             searchParameter.setRetrievalType(RetrievalType.BOOLEAN)
@@ -63,7 +64,7 @@ describe('CollectionTest', function() {
         it('testPositionalIndexBooleanQuery', function () {
             let parameter = new Parameter()
             parameter.setNGramIndex(true)
-            let collection = new Collection("testCollection2", parameter)
+            let collection = new MemoryCollection("testCollection2", parameter)
             let query = new Query("Julius Caesar")
             let searchParameter = new SearchParameter()
             searchParameter.setRetrievalType(RetrievalType.POSITIONAL)
@@ -82,7 +83,7 @@ describe('CollectionTest', function() {
         it('testPositionalIndexRankedQuery', function () {
             let parameter = new Parameter()
             parameter.setLoadIndexesFromFile(true)
-            let collection = new Collection("testCollection2", parameter)
+            let collection = new MemoryCollection("testCollection2", parameter)
             let query = new Query("Caesar")
             let searchParameter = new SearchParameter()
             searchParameter.setRetrievalType(RetrievalType.RANKED)
@@ -105,7 +106,7 @@ describe('CollectionTest', function() {
             let parameter = new Parameter()
             parameter.setNGramIndex(true)
             parameter.setLoadIndexesFromFile(true)
-            let collection = new Collection("testCollection2", parameter)
+            let collection = new MemoryCollection("testCollection2", parameter)
             assert.strictEqual(2, collection.size())
             assert.strictEqual(26, collection.vocabularySize())
         });
@@ -114,7 +115,7 @@ describe('CollectionTest', function() {
             parameter.setNGramIndex(false)
             parameter.setLimitNumberOfDocumentsLoaded(true)
             parameter.setDocumentLimit(1)
-            let collection = new Collection("testCollection2", parameter)
+            let collection = new MemoryCollection("testCollection2", parameter)
             assert.strictEqual(1, collection.size())
             assert.strictEqual(15, collection.vocabularySize())
         });
@@ -124,9 +125,42 @@ describe('CollectionTest', function() {
             parameter.setLoadIndexesFromFile(true)
             parameter.setPhraseIndex(false)
             parameter.setNGramIndex(false)
-            let collection = new Collection("testCollection3", parameter)
+            let collection = new MemoryCollection("testCollection3", parameter)
             assert.strictEqual(1000, collection.size())
             assert.strictEqual(2283, collection.vocabularySize())
+        });
+        it('testAttributeQuery', function () {
+            let parameter = new Parameter()
+            parameter.setDocumentType(DocumentType.CATEGORICAL)
+            parameter.setLoadIndexesFromFile(true)
+            let collection = new MemoryCollection("testCollection3", parameter)
+            let searchParameter = new SearchParameter()
+            searchParameter.setRetrievalType(RetrievalType.ATTRIBUTE)
+            let query = new Query("Çift Yönlü")
+            let result = collection.searchCollection(query, searchParameter)
+            assert.strictEqual(10, result.getItems().length)
+            query = new Query("Müzikli")
+            result = collection.searchCollection(query, searchParameter)
+            assert.strictEqual(4, result.getItems().length)
+            query = new Query("Çift Yönlü Alüminyum Bebek Arabası")
+            result = collection.searchCollection(query, searchParameter)
+            assert.strictEqual(2, result.getItems().length)
+        });
+        it('testCategoricalQuery', function () {
+            let parameter = new Parameter()
+            parameter.setDocumentType(DocumentType.CATEGORICAL)
+            parameter.setLoadIndexesFromFile(true)
+            let collection = new MemoryCollection("testCollection3", parameter)
+            let searchParameter = new SearchParameter()
+            searchParameter.setFocusType(FocusType.CATEGORY)
+            searchParameter.setRetrievalType(RetrievalType.BOOLEAN)
+            let query = new Query("Çift Yönlü Bebek Arabası")
+            let result = collection.searchCollection(query, searchParameter)
+            assert.strictEqual(10, result.getItems().length)
+            searchParameter.setRetrievalType(RetrievalType.BOOLEAN)
+            query = new Query("Terlik")
+            result = collection.searchCollection(query, searchParameter)
+            assert.strictEqual(5, result.getItems().length)
         });
     });
 })

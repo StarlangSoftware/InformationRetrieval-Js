@@ -601,7 +601,7 @@
 600 cm
 601 CNX
 602 Coffee
-603 Collection
+603 MemoryCollection
 604 Color
 605 Combiotic
 606 comfort

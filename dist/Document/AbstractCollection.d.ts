@@ -1,0 +1,36 @@
+import { TermDictionary } from "../Index/TermDictionary";
+import { Document } from "./Document";
+import { IncidenceMatrix } from "../Index/IncidenceMatrix";
+import { InvertedIndex } from "../Index/InvertedIndex";
+import { NGramIndex } from "../Index/NGramIndex";
+import { PositionalIndex } from "../Index/PositionalIndex";
+import { WordComparator } from "nlptoolkit-dictionary/dist/Dictionary/WordComparator";
+import { Parameter } from "./Parameter";
+import { CategoryTree } from "../Index/CategoryTree";
+export declare class AbstractCollection {
+    protected dictionary: TermDictionary;
+    protected phraseDictionary: TermDictionary;
+    protected biGramDictionary: TermDictionary;
+    protected triGramDictionary: TermDictionary;
+    protected documents: Array<Document>;
+    protected incidenceMatrix: IncidenceMatrix;
+    protected invertedIndex: InvertedIndex;
+    protected biGramIndex: NGramIndex;
+    protected triGramIndex: NGramIndex;
+    protected positionalIndex: PositionalIndex;
+    protected phraseIndex: InvertedIndex;
+    protected phrasePositionalIndex: PositionalIndex;
+    protected readonly comparator: WordComparator;
+    protected readonly name: string;
+    protected parameter: Parameter;
+    protected categoryTree: CategoryTree;
+    protected attributeList: Set<string>;
+    constructor(directory: string, parameter: Parameter);
+    loadAttributeList(): void;
+    getLine(filesData: Array<Array<string>>, files: Array<number>, index: number): string;
+    getLines(filesData: Array<Array<string>>, files: Array<number>, index: number, lineCount: number): string[];
+    loadCategories(): void;
+    size(): number;
+    vocabularySize(): number;
+    constructNGramIndex(): void;
+}

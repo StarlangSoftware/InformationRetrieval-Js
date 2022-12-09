@@ -13,12 +13,11 @@ export declare class Parameter {
     private phraseIndex;
     private positionalIndex;
     private nGramIndex;
-    private indexInDisk;
-    private dictionaryInDisk;
     private limitDocumentsLoaded;
     private documentLimit;
     private wordLimit;
     private documentType;
+    private representativeCount;
     constructor();
     getIndexType(): IndexType;
     getWordComparator(): WordComparator;
@@ -29,11 +28,10 @@ export declare class Parameter {
     normalizeDocument(): boolean;
     constructPositionalIndex(): boolean;
     constructNGramIndex(): boolean;
-    constructIndexInDisk(): boolean;
     limitNumberOfDocumentsLoaded(): boolean;
     getDocumentLimit(): number;
-    constructDictionaryInDisk(): boolean;
     getWordLimit(): number;
+    getRepresentativeCount(): number;
     setIndexType(indexType: IndexType): void;
     setWordComparator(wordComparator: WordComparator): void;
     setLoadIndexesFromFile(loadIndexesFromFile: boolean): void;
@@ -43,11 +41,10 @@ export declare class Parameter {
     setPhraseIndex(phraseIndex: boolean): void;
     setPositionalIndex(positionalIndex: boolean): void;
     setNGramIndex(nGramIndex: boolean): void;
-    setConstructIndexInDisk(constructIndexInDisk: boolean): void;
     setLimitNumberOfDocumentsLoaded(limitNumberOfDocumentsLoaded: boolean): void;
     setDocumentLimit(documentLimit: number): void;
-    setConstructDictionaryInDisk(constructDictionaryInDisk: boolean): void;
     setWordLimit(wordLimit: number): void;
+    setRepresentativeCount(representativeCount: number): void;
     getDocumentType(): DocumentType;
     setDocumentType(documentType: DocumentType): void;
 }

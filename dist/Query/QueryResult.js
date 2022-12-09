@@ -19,8 +19,33 @@
         add(docId, score = 0.0) {
             this.items.push(new QueryResultItem_1.QueryResultItem(docId, score));
         }
+        size() {
+            return this.items.length;
+        }
         getItems() {
             return this.items;
+        }
+        intersection(queryResult) {
+            let result = new QueryResult();
+            let i = 0, j = 0;
+            while (i < this.size() && j < queryResult.size()) {
+                let item1 = this.items[i];
+                let item2 = queryResult.items[j];
+                if (item1.getDocId() == item2.getDocId()) {
+                    result.add(item1.getDocId());
+                    i++;
+                    j++;
+                }
+                else {
+                    if (item1.getDocId() < item2.getDocId()) {
+                        i++;
+                    }
+                    else {
+                        j++;
+                    }
+                }
+            }
+            return result;
         }
         compare(resultA, resultB) {
             if (resultA.getScore() > resultB.getScore()) {
