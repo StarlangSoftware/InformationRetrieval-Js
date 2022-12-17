@@ -190,6 +190,24 @@
             }
             return filteredResult;
         }
+        autoCompleteWord(prefix) {
+            let result = new Array();
+            let i = this.dictionary.getWordStartingWith(prefix);
+            if (i < 0) {
+                i = -(i + 1);
+            }
+            while (i < this.dictionary.size()) {
+                if (this.dictionary.getWord(i).getName().startsWith(prefix)) {
+                    result.push(this.dictionary.getWord(i).getName());
+                }
+                else {
+                    break;
+                }
+                i++;
+            }
+            this.invertedIndex.autoCompleteWord(result, this.dictionary);
+            return result;
+        }
         searchCollection(query, searchParameter) {
             if (searchParameter.getFocusType() == FocusType_1.FocusType.CATEGORY) {
                 let currentResult = this.searchWithInvertedIndex(query, searchParameter);

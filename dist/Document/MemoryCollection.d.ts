@@ -19,5 +19,6 @@ export declare class MemoryCollection extends AbstractCollection {
     attributeSearch(query: Query): QueryResult;
     searchWithInvertedIndex(query: Query, searchParameter: SearchParameter): QueryResult;
     filterAccordingToCategories(currentResult: QueryResult, categories: Array<CategoryNode>): QueryResult;
+    autoCompleteWord(prefix: string): Array<string>;
     searchCollection(query: Query, searchParameter: SearchParameter): QueryResult;
 }

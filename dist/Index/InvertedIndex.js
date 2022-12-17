@@ -97,6 +97,20 @@
             postingList.add(docId);
             this.index.set(termId, postingList);
         }
+        autoCompleteWord(wordList, dictionary) {
+            let counts = new Array();
+            for (let word of wordList) {
+                counts.push(this.index.get(dictionary.getWordIndex(word)).size());
+            }
+            for (let i = 0; i < wordList.length - 1; i++) {
+                for (let j = i + 1; j < wordList.length; j++) {
+                    if (counts[i] < counts[j]) {
+                        [counts[i], counts[j]] = [counts[j], counts[i]];
+                        [wordList[i], wordList[j]] = [wordList[j], wordList[i]];
+                    }
+                }
+            }
+        }
         search(query, dictionary) {
             let queryTerms = new Array();
             for (let i = 0; i < query.size(); i++) {

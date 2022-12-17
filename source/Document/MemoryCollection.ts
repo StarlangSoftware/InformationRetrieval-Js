@@ -202,6 +202,24 @@ export class MemoryCollection extends AbstractCollection{
         return filteredResult
     }
 
+    autoCompleteWord(prefix: string): Array<string>{
+        let result = new Array<string>();
+        let i = this.dictionary.getWordStartingWith(prefix)
+        if (i < 0){
+            i = -(i + 1)
+        }
+        while (i < this.dictionary.size()){
+            if (this.dictionary.getWord(i).getName().startsWith(prefix)){
+                result.push(this.dictionary.getWord(i).getName())
+            } else {
+                break
+            }
+            i++
+        }
+        this.invertedIndex.autoCompleteWord(result, this.dictionary)
+        return result
+    }
+
     searchCollection(query: Query,
                      searchParameter: SearchParameter): QueryResult{
         if (searchParameter.getFocusType() == FocusType.CATEGORY){

@@ -162,5 +162,24 @@ describe('CollectionTest', function() {
             result = collection.searchCollection(query, searchParameter)
             assert.strictEqual(5, result.getItems().length)
         });
+        it('testAutoCompleteWord', function () {
+            let parameter = new Parameter()
+            parameter.setNGramIndex(true);
+            parameter.setLoadIndexesFromFile(true);
+            let memoryCollection = new MemoryCollection("testCollection2", parameter);
+            let autoCompleteList = memoryCollection.autoCompleteWord("kill");
+            assert.strictEqual(1, autoCompleteList.length);
+            autoCompleteList = memoryCollection.autoCompleteWord("Ca");
+            assert.strictEqual(2, autoCompleteList.length);
+            memoryCollection = new MemoryCollection("testCollection3", parameter);
+            parameter.setDocumentType(DocumentType.CATEGORICAL);
+            autoCompleteList = memoryCollection.autoCompleteWord("Yeni");
+            assert.strictEqual(6, autoCompleteList.length);
+            autoCompleteList = memoryCollection.autoCompleteWord("Ka");
+            assert.strictEqual(68, autoCompleteList.length);
+            autoCompleteList = memoryCollection.autoCompleteWord("Bebe");
+            assert.strictEqual(12, autoCompleteList.length);
+        });
+
     });
 })
