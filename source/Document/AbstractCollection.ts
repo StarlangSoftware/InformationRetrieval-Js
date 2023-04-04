@@ -87,7 +87,9 @@ export class AbstractCollection {
             if (line != ""){
                 let items = line.split("\t")
                 let docId = parseInt(items[0])
-                this.documents[docId].setCategory(this.categoryTree, items[1])
+                if (items.length > 1){
+                    this.documents[docId].setCategory(this.categoryTree, items[1])
+                }
             }
         }
     }

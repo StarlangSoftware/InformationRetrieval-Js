@@ -1,6 +1,6 @@
 {
   "name": "nlptoolkit-informationretrieval",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Information Retrieval library",
   "main": "index.js",
   "types": "index.js",
