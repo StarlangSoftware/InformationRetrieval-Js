@@ -43,10 +43,10 @@ export class QueryResult {
 
     compare(resultA: QueryResultItem, resultB: QueryResultItem): number {
         if (resultA.getScore() > resultB.getScore()){
-            return -1
+            return 1
         } else {
             if (resultA.getScore() < resultB.getScore()){
-                return 1
+                return -1
             } else {
                 return 0
             }
@@ -54,13 +54,21 @@ export class QueryResult {
     }
 
     getBest(K: number){
-        let minHeap: MinHeap<QueryResultItem> = new MinHeap<QueryResultItem>(2 * K, this.compare);
-        for (const queryResultItem of this.items){
-            minHeap.insert(queryResultItem)
+        let minHeap: MinHeap<QueryResultItem> = new MinHeap<QueryResultItem>(K, this.compare);
+        for (let i = 0; i < K && i < this.items.length; i++){
+            minHeap.insert(this.items[i])
+        }
+        for (let i = K + 1; i < this.items.length; i++){
+            let top = minHeap.delete();
+            if (this.compare(top, this.items[i]) > 0){
+                minHeap.insert(top);
+            } else {
+                minHeap.insert(this.items[i]);
+            }
         }
         this.items = []
         for (let i = 0; i < K && !minHeap.isEmpty(); i++){
-            this.items.push(minHeap.delete())
+            this.items.unshift(minHeap.delete())
         }
     }
 
