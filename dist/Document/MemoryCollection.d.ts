@@ -16,7 +16,7 @@ export declare class MemoryCollection extends AbstractCollection {
     constructIndexesInMemory(): void;
     termComparator: (comparator: WordComparator) => (termA: TermOccurrence, termB: TermOccurrence) => number;
     constructTerms(termType: TermType): Array<TermOccurrence>;
-    attributeSearch(query: Query): QueryResult;
+    attributeSearch(query: Query, parameter: SearchParameter): QueryResult;
     searchWithInvertedIndex(query: Query, searchParameter: SearchParameter): QueryResult;
     filterAccordingToCategories(currentResult: QueryResult, categories: Array<CategoryNode>): QueryResult;
     autoCompleteWord(prefix: string): Array<string>;

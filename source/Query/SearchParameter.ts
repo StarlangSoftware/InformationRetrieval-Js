@@ -12,6 +12,7 @@ export class SearchParameter {
     private documentsRetrieved: number
     private categoryDeterminationType: CategoryDeterminationType
     private focusType: FocusType
+    private searchAttributes: boolean
 
     constructor() {
         this.retrievalType = RetrievalType.RANKED
@@ -20,6 +21,7 @@ export class SearchParameter {
         this.documentsRetrieved = 1
         this.categoryDeterminationType = CategoryDeterminationType.KEYWORD
         this.focusType = FocusType.OVERALL
+        this.searchAttributes = false
     }
 
     setRetrievalType(retrievalType: RetrievalType) {
@@ -46,6 +48,10 @@ export class SearchParameter {
         this.focusType = focusType
     }
 
+    setSearchAttributes(searchAttributes: boolean) {
+        this.searchAttributes = searchAttributes;
+    }
+
     getRetrievalType(): RetrievalType {
         return this.retrievalType
     }
@@ -68,6 +74,10 @@ export class SearchParameter {
 
     getCategoryDeterminationType(): CategoryDeterminationType {
         return this.categoryDeterminationType
+    }
+
+    getSearchAttributes(): boolean {
+        return this.searchAttributes;
     }
 
 }

@@ -23,6 +23,7 @@
             this.documentsRetrieved = 1;
             this.categoryDeterminationType = CategoryDeterminationType_1.CategoryDeterminationType.KEYWORD;
             this.focusType = FocusType_1.FocusType.OVERALL;
+            this.searchAttributes = false;
         }
         setRetrievalType(retrievalType) {
             this.retrievalType = retrievalType;
@@ -42,6 +43,9 @@
         setFocusType(focusType) {
             this.focusType = focusType;
         }
+        setSearchAttributes(searchAttributes) {
+            this.searchAttributes = searchAttributes;
+        }
         getRetrievalType() {
             return this.retrievalType;
         }
@@ -59,6 +63,9 @@
         }
         getCategoryDeterminationType() {
             return this.categoryDeterminationType;
+        }
+        getSearchAttributes() {
+            return this.searchAttributes;
         }
     }
     exports.SearchParameter = SearchParameter;

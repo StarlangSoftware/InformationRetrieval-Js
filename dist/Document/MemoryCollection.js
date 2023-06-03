@@ -144,11 +144,12 @@
             terms.sort(this.termComparator(this.comparator));
             return terms;
         }
-        attributeSearch(query) {
+        attributeSearch(query, parameter) {
             let termAttributes = new Query_1.Query();
             let phraseAttributes = new Query_1.Query();
             let termResult = new QueryResult_1.QueryResult(), phraseResult = new QueryResult_1.QueryResult();
-            query.filterAttributes(this.attributeList, termAttributes, phraseAttributes);
+            let attributeResult, filteredResult;
+            let filteredQuery = query.filterAttributes(this.attributeList, termAttributes, phraseAttributes);
             if (termAttributes.size() > 0) {
                 termResult = this.invertedIndex.search(termAttributes, this.dictionary);
             }
@@ -156,12 +157,33 @@
                 phraseResult = this.phraseIndex.search(phraseAttributes, this.phraseDictionary);
             }
             if (termAttributes.size() == 0) {
-                return phraseResult;
+                attributeResult = phraseResult;
             }
-            if (phraseAttributes.size() == 0) {
-                return termResult;
+            else {
+                if (phraseAttributes.size() == 0) {
+                    attributeResult = termResult;
+                }
+                else {
+                    attributeResult = termResult.intersectionFastSearch(phraseResult);
+                }
             }
-            return termResult.intersection(phraseResult);
+            if (filteredQuery.size() == 0) {
+                return attributeResult;
+            }
+            else {
+                filteredResult = this.searchWithInvertedIndex(filteredQuery, parameter);
+                if (parameter.getRetrievalType() != RetrievalType_1.RetrievalType.RANKED) {
+                    return filteredResult.intersectionFastSearch(attributeResult);
+                }
+                else {
+                    if (attributeResult.size() < 10) {
+                        return filteredResult.intersectionLinearSearch(attributeResult);
+                    }
+                    else {
+                        return filteredResult.intersectionBinarySearch(attributeResult);
+                    }
+                }
+            }
         }
         searchWithInvertedIndex(query, searchParameter) {
             switch (searchParameter.getRetrievalType()) {
@@ -171,8 +193,6 @@
                     return this.positionalIndex.positionalSearch(query, this.dictionary);
                 case RetrievalType_1.RetrievalType.RANKED:
                     return this.positionalIndex.rankedSearch(query, this.dictionary, this.documents, searchParameter.getTermWeighting(), searchParameter.getDocumentWeighting(), searchParameter.getDocumentsRetrieved());
-                case RetrievalType_1.RetrievalType.ATTRIBUTE:
-                    return this.attributeSearch(query);
             }
             return new QueryResult_1.QueryResult();
         }
@@ -209,8 +229,14 @@
             return result;
         }
         searchCollection(query, searchParameter) {
+            let currentResult;
             if (searchParameter.getFocusType() == FocusType_1.FocusType.CATEGORY) {
-                let currentResult = this.searchWithInvertedIndex(query, searchParameter);
+                if (searchParameter.getSearchAttributes()) {
+                    currentResult = this.attributeSearch(query, searchParameter);
+                }
+                else {
+                    currentResult = this.searchWithInvertedIndex(query, searchParameter);
+                }
                 let categories = this.categoryTree.getCategories(query, this.dictionary, searchParameter.getCategoryDeterminationType());
                 return this.filterAccordingToCategories(currentResult, categories);
             }
@@ -219,7 +245,12 @@
                     case IndexType_1.IndexType.INCIDENCE_MATRIX:
                         return this.incidenceMatrix.search(query, this.dictionary);
                     case IndexType_1.IndexType.INVERTED_INDEX:
-                        return this.searchWithInvertedIndex(query, searchParameter);
+                        if (searchParameter.getSearchAttributes()) {
+                            return this.attributeSearch(query, searchParameter);
+                        }
+                        else {
+                            return this.searchWithInvertedIndex(query, searchParameter);
+                        }
                 }
             }
             return new QueryResult_1.QueryResult();

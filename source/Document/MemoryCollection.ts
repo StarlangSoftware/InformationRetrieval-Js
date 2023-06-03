@@ -148,11 +148,12 @@ export class MemoryCollection extends AbstractCollection{
         return terms;
     }
 
-    attributeSearch(query: Query): QueryResult{
+    attributeSearch(query: Query, parameter: SearchParameter): QueryResult{
         let termAttributes = new Query()
         let phraseAttributes = new Query()
         let termResult = new QueryResult(), phraseResult = new QueryResult()
-        query.filterAttributes(this.attributeList, termAttributes, phraseAttributes)
+        let attributeResult, filteredResult
+        let filteredQuery = query.filterAttributes(this.attributeList, termAttributes, phraseAttributes)
         if (termAttributes.size() > 0){
             termResult = this.invertedIndex.search(termAttributes, this.dictionary)
         }
@@ -160,12 +161,28 @@ export class MemoryCollection extends AbstractCollection{
             phraseResult = this.phraseIndex.search(phraseAttributes, this.phraseDictionary)
         }
         if (termAttributes.size() == 0){
-            return phraseResult
+            attributeResult = phraseResult
+        } else {
+            if (phraseAttributes.size() == 0){
+                attributeResult = termResult
+            } else {
+                attributeResult = termResult.intersectionFastSearch(phraseResult)
+            }
         }
-        if (phraseAttributes.size() == 0){
-            return termResult
+        if (filteredQuery.size() == 0){
+            return attributeResult
+        } else {
+            filteredResult = this.searchWithInvertedIndex(filteredQuery, parameter);
+            if (parameter.getRetrievalType() != RetrievalType.RANKED){
+                return filteredResult.intersectionFastSearch(attributeResult)
+            } else {
+                if (attributeResult.size() < 10){
+                    return filteredResult.intersectionLinearSearch(attributeResult)
+                } else {
+                    return filteredResult.intersectionBinarySearch(attributeResult)
+                }
+            }
         }
-        return termResult.intersection(phraseResult)
     }
 
     searchWithInvertedIndex(query: Query, searchParameter: SearchParameter): QueryResult{
@@ -181,8 +198,6 @@ export class MemoryCollection extends AbstractCollection{
                 searchParameter.getTermWeighting(),
                 searchParameter.getDocumentWeighting(),
                 searchParameter.getDocumentsRetrieved())
-            case RetrievalType.ATTRIBUTE:
-                return this.attributeSearch(query)
         }
         return new QueryResult()
     }
@@ -222,8 +237,13 @@ export class MemoryCollection extends AbstractCollection{
 
     searchCollection(query: Query,
                      searchParameter: SearchParameter): QueryResult{
+        let currentResult
         if (searchParameter.getFocusType() == FocusType.CATEGORY){
-            let currentResult = this.searchWithInvertedIndex(query, searchParameter)
+            if (searchParameter.getSearchAttributes()){
+                currentResult = this.attributeSearch(query, searchParameter)
+            } else {
+                currentResult = this.searchWithInvertedIndex(query, searchParameter)
+            }
             let categories = this.categoryTree.getCategories(query, this.dictionary, searchParameter.getCategoryDeterminationType())
             return this.filterAccordingToCategories(currentResult, categories)
         } else {
@@ -231,7 +251,11 @@ export class MemoryCollection extends AbstractCollection{
                 case IndexType.INCIDENCE_MATRIX:
                     return this.incidenceMatrix.search(query, this.dictionary)
                 case IndexType.INVERTED_INDEX:
-                    return this.searchWithInvertedIndex(query, searchParameter)
+                    if (searchParameter.getSearchAttributes()){
+                        return this.attributeSearch(query, searchParameter);
+                    } else {
+                        return this.searchWithInvertedIndex(query, searchParameter);
+                    }
             }
         }
         return new QueryResult()

@@ -29,6 +29,7 @@
         }
         filterAttributes(attributeList, termAttributes, phraseAttributes) {
             let i = 0;
+            let filteredQuery = new Query();
             while (i < this.terms.length) {
                 if (i < this.terms.length - 1) {
                     let pair = this.terms[i].getName() + " " + this.terms[i + 1].getName();
@@ -41,8 +42,12 @@
                 if (attributeList.has(this.terms[i].getName())) {
                     termAttributes.terms.push(this.terms[i]);
                 }
+                else {
+                    filteredQuery.terms.push(this.terms[i]);
+                }
                 i++;
             }
+            return filteredQuery;
         }
     }
     exports.Query = Query;

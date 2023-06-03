@@ -20,7 +20,7 @@ export class QueryResult {
         return this.items
     }
 
-    intersection(queryResult: QueryResult): QueryResult{
+    intersectionFastSearch(queryResult: QueryResult): QueryResult{
         let result = new QueryResult()
         let i = 0, j = 0
         while (i < this.size() && j < queryResult.size()){
@@ -35,6 +35,45 @@ export class QueryResult {
                     i++
                 } else {
                     j++
+                }
+            }
+        }
+        return result
+    }
+
+    intersectionBinarySearch(queryResult: QueryResult): QueryResult{
+        let result = new QueryResult()
+        for (let searchedItem of this.items){
+            let low = 0
+            let high = queryResult.size() - 1
+            let middle = (low + high) / 2
+            let found = false
+            while (low <= high){
+                if (searchedItem.getDocId() > queryResult.items[middle].getDocId()){
+                    low = middle + 1
+                } else {
+                    if (searchedItem.getDocId() < queryResult.items[middle].getDocId()){
+                        high = middle - 1
+                    } else {
+                        found = true
+                        break
+                    }
+                }
+                middle = (low + high) / 2
+            }
+            if (found){
+                result.add(searchedItem.getDocId(), searchedItem.getScore())
+            }
+        }
+        return result;
+    }
+
+    intersectionLinearSearch(queryResult: QueryResult): QueryResult{
+        let result = new QueryResult()
+        for (let searchedItem of this.items){
+            for (let item of queryResult.items){
+                if (searchedItem.getDocId() == item.getDocId()){
+                    result.add(searchedItem.getDocId(), searchedItem.getScore())
                 }
             }
         }

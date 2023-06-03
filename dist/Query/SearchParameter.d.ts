@@ -10,6 +10,7 @@ export declare class SearchParameter {
     private documentsRetrieved;
     private categoryDeterminationType;
     private focusType;
+    private searchAttributes;
     constructor();
     setRetrievalType(retrievalType: RetrievalType): void;
     setDocumentWeighting(documentWeighting: DocumentWeighting): void;
@@ -17,10 +18,12 @@ export declare class SearchParameter {
     setDocumentsRetrieved(documentsRetrieved: number): void;
     setCategoryDeterminationType(categoryDeterminationType: CategoryDeterminationType): void;
     setFocusType(focusType: FocusType): void;
+    setSearchAttributes(searchAttributes: boolean): void;
     getRetrievalType(): RetrievalType;
     getDocumentWeighting(): DocumentWeighting;
     getTermWeighting(): TermWeighting;
     getDocumentsRetrieved(): number;
     getFocusType(): FocusType;
     getCategoryDeterminationType(): CategoryDeterminationType;
+    getSearchAttributes(): boolean;
 }

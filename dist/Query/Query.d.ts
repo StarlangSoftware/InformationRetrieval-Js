@@ -4,5 +4,5 @@ export declare class Query {
     constructor(query?: string);
     getTerm(index: number): Word;
     size(): number;
-    filterAttributes(attributeList: Set<string>, termAttributes: Query, phraseAttributes: Query): void;
+    filterAttributes(attributeList: Set<string>, termAttributes: Query, phraseAttributes: Query): Query;
 }

@@ -21,8 +21,9 @@ export class Query {
         return this.terms.length
     }
 
-    filterAttributes(attributeList: Set<string>, termAttributes: Query, phraseAttributes: Query){
+    filterAttributes(attributeList: Set<string>, termAttributes: Query, phraseAttributes: Query): Query{
         let i = 0
+        let filteredQuery = new Query()
         while (i < this.terms.length){
             if (i < this.terms.length - 1){
                 let pair = this.terms[i].getName() + " " + this.terms[i + 1].getName()
@@ -34,8 +35,11 @@ export class Query {
             }
             if (attributeList.has(this.terms[i].getName())){
                 termAttributes.terms.push(this.terms[i])
+            } else {
+                filteredQuery.terms.push(this.terms[i])
             }
             i++
         }
+        return filteredQuery
     }
 }

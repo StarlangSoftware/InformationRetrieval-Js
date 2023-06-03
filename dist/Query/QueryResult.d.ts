@@ -5,7 +5,9 @@ export declare class QueryResult {
     add(docId: number, score?: number): void;
     size(): number;
     getItems(): Array<QueryResultItem>;
-    intersection(queryResult: QueryResult): QueryResult;
+    intersectionFastSearch(queryResult: QueryResult): QueryResult;
+    intersectionBinarySearch(queryResult: QueryResult): QueryResult;
+    intersectionLinearSearch(queryResult: QueryResult): QueryResult;
     compare(resultA: QueryResultItem, resultB: QueryResultItem): number;
     getBest(K: number): void;
 }
