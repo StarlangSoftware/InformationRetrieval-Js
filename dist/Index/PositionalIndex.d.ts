@@ -10,7 +10,7 @@ export declare class PositionalIndex {
     private positionalIndex;
     constructor(dictionaryOrFileName?: any, terms?: Array<TermOccurrence>, comparator?: WordComparator);
     readPositionalPostingList(fileName: string): void;
-    keyComparator: (a: (string | number)[], b: (string | number)[]) => 1 | -1 | 0;
+    keyComparator: (a: (string | number)[], b: (string | number)[]) => 0 | 1 | -1;
     saveSorted(fileName: string): void;
     save(fileName: string): void;
     addPosition(termId: number, docId: number, position: number): void;
