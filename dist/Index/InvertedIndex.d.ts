@@ -8,11 +8,11 @@ export declare class InvertedIndex {
     private index;
     constructor(dictionaryOrFileName?: any, terms?: Array<TermOccurrence>, comparator?: WordComparator);
     readPostingList(fileName: string): void;
-    keyComparator: (a: (string | number)[], b: (string | number)[]) => 1 | -1 | 0;
+    keyComparator: (a: (string | number)[], b: (string | number)[]) => 0 | 1 | -1;
     saveSorted(fileName: string): void;
     save(fileName: string): void;
     add(termId: number, docId: number): void;
-    postingListComparator: (listA: PostingList, listB: PostingList) => 1 | -1 | 0;
+    postingListComparator: (listA: PostingList, listB: PostingList) => 0 | 1 | -1;
     autoCompleteWord(wordList: Array<string>, dictionary: TermDictionary): void;
     search(query: Query, dictionary: TermDictionary): QueryResult;
 }

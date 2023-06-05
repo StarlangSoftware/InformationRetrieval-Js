@@ -213,7 +213,7 @@ export class PositionalIndex {
             }
         }
         for (let docID of scores.keys()){
-            result.add(docID, scores.get(docID) / documents[docID].getSize())
+            result.add(docID, Math.sqrt(scores.get(docID)) / (documents[docID].getSize()*query.size()))
         }
         result.getBest(documentsReturned)
         return result
