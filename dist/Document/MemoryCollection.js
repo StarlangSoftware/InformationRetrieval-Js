@@ -171,17 +171,20 @@
                 return attributeResult;
             }
             else {
-                filteredResult = this.searchWithInvertedIndex(filteredQuery, parameter);
                 if (parameter.getRetrievalType() != RetrievalType_1.RetrievalType.RANKED) {
+                    filteredResult = this.searchWithInvertedIndex(filteredQuery, parameter);
                     return filteredResult.intersectionFastSearch(attributeResult);
                 }
                 else {
+                    filteredResult = this.positionalIndex.rankedSearch(filteredQuery, this.dictionary, this.documents, parameter);
                     if (attributeResult.size() < 10) {
-                        return filteredResult.intersectionLinearSearch(attributeResult);
+                        filteredResult = filteredResult.intersectionLinearSearch(attributeResult);
                     }
                     else {
-                        return filteredResult.intersectionBinarySearch(attributeResult);
+                        filteredResult = filteredResult.intersectionBinarySearch(attributeResult);
                     }
+                    filteredResult.getBest(parameter.getDocumentsRetrieved());
+                    return filteredResult;
                 }
             }
         }
@@ -192,7 +195,9 @@
                 case RetrievalType_1.RetrievalType.POSITIONAL:
                     return this.positionalIndex.positionalSearch(query, this.dictionary);
                 case RetrievalType_1.RetrievalType.RANKED:
-                    return this.positionalIndex.rankedSearch(query, this.dictionary, this.documents, searchParameter.getTermWeighting(), searchParameter.getDocumentWeighting(), searchParameter.getDocumentsRetrieved());
+                    let result = this.positionalIndex.rankedSearch(query, this.dictionary, this.documents, searchParameter);
+                    result.getBest(searchParameter.getDocumentsRetrieved());
+                    return result;
             }
             return new QueryResult_1.QueryResult();
         }

@@ -4,8 +4,7 @@ import { TermDictionary } from "./TermDictionary";
 import { Query } from "../Query/Query";
 import { QueryResult } from "../Query/QueryResult";
 import { Document } from "../Document/Document";
-import { TermWeighting } from "./TermWeighting";
-import { DocumentWeighting } from "../Document/DocumentWeighting";
+import { SearchParameter } from "../Query/SearchParameter";
 export declare class PositionalIndex {
     private positionalIndex;
     constructor(dictionaryOrFileName?: any, terms?: Array<TermOccurrence>, comparator?: WordComparator);
@@ -19,5 +18,5 @@ export declare class PositionalIndex {
     getDocumentFrequencies(): Array<number>;
     setDocumentSizes(documents: Array<Document>): void;
     setCategoryCounts(documents: Array<Document>): void;
-    rankedSearch(query: Query, dictionary: TermDictionary, documents: Array<Document>, termWeighting: TermWeighting, documentWeighting: DocumentWeighting, documentsReturned: number): QueryResult;
+    rankedSearch(query: Query, dictionary: TermDictionary, documents: Array<Document>, parameter: SearchParameter): QueryResult;
 }

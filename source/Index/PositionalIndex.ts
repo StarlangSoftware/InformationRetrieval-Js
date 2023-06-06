@@ -9,6 +9,7 @@ import {Document} from "../Document/Document";
 import {TermWeighting} from "./TermWeighting";
 import {DocumentWeighting} from "../Document/DocumentWeighting";
 import {VectorSpaceModel} from "../Query/VectorSpaceModel";
+import {SearchParameter} from "../Query/SearchParameter";
 
 export class PositionalIndex {
 
@@ -186,9 +187,7 @@ export class PositionalIndex {
     rankedSearch(query:Query,
                  dictionary: TermDictionary,
                  documents: Array<Document>,
-                 termWeighting: TermWeighting,
-                 documentWeighting: DocumentWeighting,
-                 documentsReturned: number): QueryResult{
+                 parameter: SearchParameter): QueryResult{
         let N = documents.length
         let result = new QueryResult()
         let scores = new Map<number, number>()
@@ -202,7 +201,7 @@ export class PositionalIndex {
                     let tf = positionalPosting.size();
                     let df = this.positionalIndex.get(term).size();
                     if (tf > 0 && df > 0){
-                        let score = VectorSpaceModel.weighting(tf, df, N, termWeighting, documentWeighting)
+                        let score = VectorSpaceModel.weighting(tf, df, N, parameter.getTermWeighting(), parameter.getDocumentWeighting())
                         if (scores.has(docID)){
                             scores.set(docID, scores.get(docID) + score)
                         } else {
@@ -215,7 +214,6 @@ export class PositionalIndex {
         for (let docID of scores.keys()){
             result.add(docID, scores.get(docID) / documents[docID].getSize())
         }
-        result.getBest(documentsReturned)
         return result
     }
 }

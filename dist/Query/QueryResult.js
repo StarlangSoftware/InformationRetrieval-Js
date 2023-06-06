@@ -52,7 +52,7 @@
             for (let searchedItem of this.items) {
                 let low = 0;
                 let high = queryResult.size() - 1;
-                let middle = (low + high) / 2;
+                let middle = Math.floor((low + high) / 2);
                 let found = false;
                 while (low <= high) {
                     if (searchedItem.getDocId() > queryResult.items[middle].getDocId()) {
@@ -67,7 +67,7 @@
                             break;
                         }
                     }
-                    middle = (low + high) / 2;
+                    middle = Math.floor((low + high) / 2);
                 }
                 if (found) {
                     result.add(searchedItem.getDocId(), searchedItem.getScore());
