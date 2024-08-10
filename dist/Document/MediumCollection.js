@@ -16,10 +16,22 @@
     const InvertedIndex_1 = require("../Index/InvertedIndex");
     const PositionalIndex_1 = require("../Index/PositionalIndex");
     class MediumCollection extends DiskCollection_1.DiskCollection {
+        /**
+         * Constructor for the MediumCollection class. In medium collections, dictionary is kept in memory and indexes are
+         * stored in the disk and don't fit in memory in their construction phase and usage phase. For that reason, in their
+         * construction phase, multiple disk reads and optimizations are needed.
+         * @param directory Directory where the document collection resides.
+         * @param parameter Search parameter
+         */
         constructor(directory, parameter) {
             super(directory, parameter);
             this.constructIndexesInDisk();
         }
+        /**
+         * In block sort based indexing, the indexes are created in a block wise manner. They do not fit in memory, therefore
+         * documents are read one by one. According to the search parameter, inverted index, positional index, phrase
+         * indexes, N-Gram indexes are constructed in disk.
+         */
         constructIndexesInDisk() {
             let wordList = this.constructDistinctWordList(TermType_1.TermType.TOKEN);
             this.dictionary = new TermDictionary_1.TermDictionary(this.comparator, wordList);
@@ -39,6 +51,14 @@
                 this.constructNGramIndex();
             }
         }
+        /**
+         * Given the document collection, creates a hash set of distinct terms. If term type is TOKEN, the terms are single
+         * word, if the term type is PHRASE, the terms are bi-words. Each document is loaded into memory and distinct
+         * word list is created. Since the dictionary can be kept in memory, all operations can be done in memory.
+         * @param termType If term type is TOKEN, the terms are single word, if the term type is PHRASE, the terms are
+         *                 bi-words.
+         * @return Hash set of terms occurring in the document collection.
+         */
         constructDistinctWordList(termType) {
             let words = new Set();
             for (let doc of this.documents) {
@@ -50,6 +70,16 @@
             }
             return words;
         }
+        /**
+         * In block sort based indexing, the inverted index is created in a block wise manner. It does not fit in memory,
+         * therefore documents are read one by one. For each document, the terms are added to the inverted index. If the
+         * number of documents read are above the limit, current partial inverted index file is saved and new inverted index
+         * file is open. After reading all documents, we combine the inverted index files to get the final inverted index
+         * file.
+         * @param dictionary Term dictionary.
+         * @param termType If term type is TOKEN, the terms are single word, if the term type is PHRASE, the terms are
+         *                 bi-words.
+         */
         constructInvertedIndexInDisk(dictionary, termType) {
             let i = 0, blockCount = 0;
             let invertedIndex = new InvertedIndex_1.InvertedIndex();
@@ -81,6 +111,16 @@
                 this.combineMultipleInvertedIndexesInDisk(this.name + "-phrase", "", blockCount);
             }
         }
+        /**
+         * In block sort based indexing, the positional index is created in a block wise manner. It does not fit in memory,
+         * therefore documents are read one by one. For each document, the terms are added to the positional index. If the
+         * number of documents read are above the limit, current partial positional index file is saved and new positional
+         * index file is open. After reading all documents, we combine the posiitonal index files to get the final
+         * positional index file.
+         * @param dictionary Term dictionary.
+         * @param termType If term type is TOKEN, the terms are single word, if the term type is PHRASE, the terms are
+         *                 bi-words.
+         */
         constructPositionalIndexInDisk(dictionary, termType) {
             let i = 0, blockCount = 0;
             let positionalIndex = new PositionalIndex_1.PositionalIndex();

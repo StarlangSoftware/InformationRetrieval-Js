@@ -27,6 +27,12 @@
     const FocusType_1 = require("../Query/FocusType");
     const AbstractCollection_1 = require("./AbstractCollection");
     class MemoryCollection extends AbstractCollection_1.AbstractCollection {
+        /**
+         * Constructor for the MemoryCollection class. In small collections, dictionary and indexes are kept in memory.
+         * Memory collection also supports categorical documents.
+         * @param directory Directory where the document collection resides.
+         * @param parameter Search parameter
+         */
         constructor(directory, parameter) {
             super(directory, parameter);
             this.termComparator = (comparator) => (termA, termB) => (TermOccurrence_1.TermOccurrence.wordComparator(comparator)(termA.getTerm(), termB.getTerm()) != 0 ?
@@ -49,6 +55,11 @@
                 this.categoryTree.setRepresentativeCount(parameter.getRepresentativeCount());
             }
         }
+        /**
+         * The method loads the term dictionary, inverted index, positional index, phrase and N-Gram indexes from dictionary
+         * and index files to the memory.
+         * @param directory Directory where the document collection resides.
+         */
         loadIndexesFromFile(directory) {
             this.dictionary = new TermDictionary_1.TermDictionary(this.comparator, directory);
             this.invertedIndex = new InvertedIndex_1.InvertedIndex(directory);
@@ -70,6 +81,11 @@
                 this.triGramIndex = new NGramIndex_1.NGramIndex(directory + "-triGram");
             }
         }
+        /**
+         * The method saves the term dictionary, inverted index, positional index, phrase and N-Gram indexes to the dictionary
+         * and index files. If the collection is a categorical collection, categories are also saved to the category
+         * files.
+         */
         save() {
             if (this.indexType == IndexType_1.IndexType.INVERTED_INDEX) {
                 this.dictionary.save(this.name);
@@ -95,6 +111,9 @@
                 this.saveCategories();
             }
         }
+        /**
+         * The method saves the category tree for the categorical collections.
+         */
         saveCategories() {
             let output = "";
             for (let document of this.documents) {
@@ -102,6 +121,9 @@
             }
             fs.writeFileSync(this.name + "-categories.txt", output, "utf-8");
         }
+        /**
+         * The method constructs the term dictionary, inverted index, positional index, phrase and N-Gram indexes in memory.
+         */
         constructIndexesInMemory() {
             let terms = this.constructTerms(TermType_1.TermType.TOKEN);
             this.dictionary = new TermDictionary_1.TermDictionary(this.comparator, terms);
@@ -134,6 +156,14 @@
                     break;
             }
         }
+        /**
+         * Given the document collection, creates an array list of terms. If term type is TOKEN, the terms are single
+         * word, if the term type is PHRASE, the terms are bi-words. Each document is loaded into memory and
+         * word list is created. Since the dictionary can be kept in memory, all operations can be done in memory.
+         * @param termType If term type is TOKEN, the terms are single word, if the term type is PHRASE, the terms are
+         *                 bi-words.
+         * @return Array list of terms occurring in the document collection.
+         */
         constructTerms(termType) {
             let terms = new Array();
             for (let doc of this.documents) {
@@ -144,6 +174,18 @@
             terms.sort(this.termComparator(this.comparator));
             return terms;
         }
+        /**
+         * The method searches given query string in the document collection using the attribute list according to the
+         * given search parameter. First, the original query is filtered by removing phrase attributes, shortcuts and single
+         * word attributes. At this stage, we get the word and phrase attributes in the original query and the remaining
+         * words in the original query as two separate queries. Second, both single word and phrase attributes in the
+         * original query are searched in the document collection. Third, these intermediate query results are then
+         * intersected. Fourth, we put this results into either (i) an inverted index (ii) or a ranked based positional
+         * filtering with the filtered query to get the end result.
+         * @param query Query string
+         * @param parameter Search parameter for the query
+         * @return The intermediate result of the query obtained by doing attribute list based search in the collection.
+         */
         attributeSearch(query, parameter) {
             let termAttributes = new Query_1.Query();
             let phraseAttributes = new Query_1.Query();
@@ -188,6 +230,14 @@
                 }
             }
         }
+        /**
+         * The method searches given query string in the document collection using the inverted index according to the
+         * given search parameter. If the search is (i) boolean, inverted index is used (ii) positional, positional
+         * inverted index is used, (iii) ranked, positional inverted index is used with a ranking algorithm at the end.
+         * @param query Query string
+         * @param searchParameter Search parameter for the query
+         * @return The intermediate result of the query obtained by doing inverted index based search in the collection.
+         */
         searchWithInvertedIndex(query, searchParameter) {
             switch (searchParameter.getRetrievalType()) {
                 case RetrievalType_1.RetrievalType.BOOLEAN:
@@ -201,6 +251,14 @@
             }
             return new QueryResult_1.QueryResult();
         }
+        /**
+         * Filters current search result according to the predicted categories from the query string. For every search
+         * result, if it is in one of the predicated categories, is added to the filtered end result. Otherwise, it is
+         * omitted in the end result.
+         * @param currentResult Current search result before filtering.
+         * @param categories Predicted categories that match the query string.
+         * @return Filtered query result
+         */
         filterAccordingToCategories(currentResult, categories) {
             let filteredResult = new QueryResult_1.QueryResult();
             let items = currentResult.getItems();
@@ -215,6 +273,12 @@
             }
             return filteredResult;
         }
+        /**
+         * Constructs an auto complete list of product names for a given prefix. THe results are sorted according to
+         * frequencies.
+         * @param prefix Prefix of the name of the product.
+         * @return An auto complete list of product names for a given prefix.
+         */
         autoCompleteWord(prefix) {
             let result = new Array();
             let i = this.dictionary.getWordStartingWith(prefix);
@@ -233,6 +297,16 @@
             this.invertedIndex.autoCompleteWord(result, this.dictionary);
             return result;
         }
+        /**
+         * Searches a document collection for a given query according to the given search parameters. The documents are
+         * searched using (i) incidence matrix if the index type is incidence matrix, (ii) attribute list if search
+         * attributes option is selected, (iii) inverted index if the index type is inverted index and no attribute
+         * search is done. After the initial search, if there is a categorical focus, it filters the results
+         * according to the predicted categories from the query string.
+         * @param query Query string
+         * @param searchParameter Search parameter for the query
+         * @return The result of the query obtained by doing search in the collection.
+         */
         searchCollection(query, searchParameter) {
             let currentResult;
             if (searchParameter.getFocusType() == FocusType_1.FocusType.CATEGORY) {

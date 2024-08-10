@@ -22,42 +22,65 @@
                 (a[0] > b[0] ? 1 : 0));
             if (dictionaryOrFileName != undefined) {
                 if (dictionaryOrFileName instanceof TermDictionary_1.TermDictionary) {
-                    let dictionary = dictionaryOrFileName;
-                    if (terms.length > 0) {
-                        let term = terms[0];
-                        let i = 1;
-                        let previousTerm = term;
-                        let termId = dictionary.getWordIndex(term.getTerm().getName());
-                        this.addPosition(termId, term.getDocId(), term.getPosition());
-                        let prevDocId = term.getDocId();
-                        while (i < terms.length) {
-                            term = terms[i];
-                            termId = dictionary.getWordIndex(term.getTerm().getName());
-                            if (termId != -1) {
-                                if (term.isDifferent(previousTerm, comparator)) {
-                                    this.addPosition(termId, term.getDocId(), term.getPosition());
-                                    prevDocId = term.getDocId();
-                                }
-                                else {
-                                    if (prevDocId != term.getDocId()) {
-                                        this.addPosition(termId, term.getDocId(), term.getPosition());
-                                        prevDocId = term.getDocId();
-                                    }
-                                    else {
-                                        this.addPosition(termId, term.getDocId(), term.getPosition());
-                                    }
-                                }
-                            }
-                            i++;
-                            previousTerm = term;
-                        }
-                    }
+                    this.constructor1(dictionaryOrFileName, terms, comparator);
                 }
                 else {
-                    this.readPositionalPostingList(dictionaryOrFileName);
+                    this.constructor2(dictionaryOrFileName);
                 }
             }
         }
+        /**
+         * Constructs a positional inverted index from a list of sorted tokens. The terms array should be sorted before
+         * calling this method. Multiple occurrences of the same term from the same document are enlisted separately in the
+         * index.
+         * @param dictionary Term dictionary
+         * @param terms Sorted list of tokens in the memory collection.
+         * @param comparator Comparator method to compare two terms.
+         */
+        constructor1(dictionary, terms, comparator) {
+            if (terms.length > 0) {
+                let term = terms[0];
+                let i = 1;
+                let previousTerm = term;
+                let termId = dictionary.getWordIndex(term.getTerm().getName());
+                this.addPosition(termId, term.getDocId(), term.getPosition());
+                let prevDocId = term.getDocId();
+                while (i < terms.length) {
+                    term = terms[i];
+                    termId = dictionary.getWordIndex(term.getTerm().getName());
+                    if (termId != -1) {
+                        if (term.isDifferent(previousTerm, comparator)) {
+                            this.addPosition(termId, term.getDocId(), term.getPosition());
+                            prevDocId = term.getDocId();
+                        }
+                        else {
+                            if (prevDocId != term.getDocId()) {
+                                this.addPosition(termId, term.getDocId(), term.getPosition());
+                                prevDocId = term.getDocId();
+                            }
+                            else {
+                                this.addPosition(termId, term.getDocId(), term.getPosition());
+                            }
+                        }
+                    }
+                    i++;
+                    previousTerm = term;
+                }
+            }
+        }
+        /**
+         * Reads the positional inverted index from an input file.
+         * @param fileName Input file name for the positional inverted index.
+         */
+        constructor2(fileName) {
+            this.readPositionalPostingList(fileName);
+        }
+        /**
+         * Reads the positional postings list of the positional index from an input file. The postings are stored in n
+         * lines. The first line contains the term id and the number of documents that term occurs. Other n - 1 lines
+         * contain the postings list for that term for a separate document.
+         * @param fileName Positional index file.
+         */
         readPositionalPostingList(fileName) {
             let data = fs.readFileSync(fileName + "-positionalPostings.txt", "utf-8");
             let lines = data.split("\n");
@@ -83,6 +106,13 @@
             }
             fs.writeFileSync(fileName + "-positionalPostings.txt", data, 'utf-8');
         }
+        /**
+         * Saves the positional index into the index file. The postings are stored in n lines. The first line contains the
+         * term id and the number of documents that term occurs. Other n - 1 lines contain the postings list for that term
+         * for a separate document.
+         * @param fileName Index file name. Real index file name is created by attaching -positionalPostings.txt to this
+         *                 file name
+         */
         save(fileName) {
             let data = "";
             for (let key of this.positionalIndex.keys()) {
@@ -90,6 +120,13 @@
             }
             fs.writeFileSync(fileName + "-positionalPostings.txt", data, 'utf-8');
         }
+        /**
+         * Adds a possible new term with a position and document id to the positional index. First the term is searched in
+         * the hash map, then the position and the document id is put into the correct postings list.
+         * @param termId Id of the term
+         * @param docId Document id in which the term exists
+         * @param position Position of the term in the document with id docId
+         */
         addPosition(termId, docId, position) {
             let positionalPostingList;
             if (!this.positionalIndex.has(termId)) {
@@ -101,6 +138,12 @@
             positionalPostingList.add(docId, position);
             this.positionalIndex.set(termId, positionalPostingList);
         }
+        /**
+         * Searches a given query in the document collection using positional index boolean search.
+         * @param query Query string
+         * @param dictionary Term dictionary
+         * @return The result of the query obtained by doing positional index boolean search in the collection.
+         */
         positionalSearch(query, dictionary) {
             let postingResult = null;
             for (let i = 0; i < query.size(); i++) {
@@ -129,6 +172,11 @@
                 return new QueryResult_1.QueryResult();
             }
         }
+        /**
+         * Returns the term frequencies  in a given document.
+         * @param docId Id of the document
+         * @return Term frequencies of the given document.
+         */
         getTermFrequencies(docId) {
             let tf = new Array();
             let i = 0;
@@ -145,6 +193,10 @@
             }
             return tf;
         }
+        /**
+         * Returns the document frequencies of the terms in the collection.
+         * @return The document frequencies of the terms in the collection.
+         */
         getDocumentFrequencies() {
             let df = new Array();
             let i = 0;
@@ -154,6 +206,10 @@
             }
             return df;
         }
+        /**
+         * Calculates and sets the number of terms in each document in the document collection.
+         * @param documents Document collection.
+         */
         setDocumentSizes(documents) {
             let sizes = new Array();
             for (let i = 0; i < documents.length; i++) {
@@ -171,6 +227,10 @@
                 doc.setSize(sizes[doc.getDocId()]);
             }
         }
+        /**
+         * Calculates and updates the frequency counts of the terms in each category node.
+         * @param documents Document collection.
+         */
         setCategoryCounts(documents) {
             for (let termId of this.positionalIndex.keys()) {
                 let positionalPostingList = this.positionalIndex.get(termId);
@@ -181,6 +241,14 @@
                 }
             }
         }
+        /**
+         * Searches a given query in the document collection using inverted index ranked search.
+         * @param query Query string
+         * @param dictionary Term dictionary
+         * @param documents Document collection
+         * @param parameter Search parameter
+         * @return The result of the query obtained by doing inverted index ranked search in the collection.
+         */
         rankedSearch(query, dictionary, documents, parameter) {
             let N = documents.length;
             let result = new QueryResult_1.QueryResult();

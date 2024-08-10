@@ -23,6 +23,12 @@ export class MemoryCollection extends AbstractCollection {
 
     private readonly indexType: IndexType
 
+    /**
+     * Constructor for the MemoryCollection class. In small collections, dictionary and indexes are kept in memory.
+     * Memory collection also supports categorical documents.
+     * @param directory Directory where the document collection resides.
+     * @param parameter Search parameter
+     */
     constructor(directory: string, parameter: Parameter) {
         super(directory, parameter)
         this.indexType = parameter.getIndexType()
@@ -37,6 +43,11 @@ export class MemoryCollection extends AbstractCollection {
         }
     }
 
+    /**
+     * The method loads the term dictionary, inverted index, positional index, phrase and N-Gram indexes from dictionary
+     * and index files to the memory.
+     * @param directory Directory where the document collection resides.
+     */
     loadIndexesFromFile(directory: string) {
         this.dictionary = new TermDictionary(this.comparator, directory)
         this.invertedIndex = new InvertedIndex(directory)
@@ -59,6 +70,11 @@ export class MemoryCollection extends AbstractCollection {
         }
     }
 
+    /**
+     * The method saves the term dictionary, inverted index, positional index, phrase and N-Gram indexes to the dictionary
+     * and index files. If the collection is a categorical collection, categories are also saved to the category
+     * files.
+     */
     save() {
         if (this.indexType == IndexType.INVERTED_INDEX) {
             this.dictionary.save(this.name)
@@ -85,6 +101,9 @@ export class MemoryCollection extends AbstractCollection {
         }
     }
 
+    /**
+     * The method saves the category tree for the categorical collections.
+     */
     saveCategories() {
         let output = ""
         for (let document of this.documents) {
@@ -93,6 +112,9 @@ export class MemoryCollection extends AbstractCollection {
         fs.writeFileSync(this.name + "-categories.txt", output, "utf-8")
     }
 
+    /**
+     * The method constructs the term dictionary, inverted index, positional index, phrase and N-Gram indexes in memory.
+     */
     constructIndexesInMemory() {
         let terms = this.constructTerms(TermType.TOKEN);
         this.dictionary = new TermDictionary(this.comparator, terms);
@@ -137,6 +159,14 @@ export class MemoryCollection extends AbstractCollection {
                         -1 : 1))
         )
 
+    /**
+     * Given the document collection, creates an array list of terms. If term type is TOKEN, the terms are single
+     * word, if the term type is PHRASE, the terms are bi-words. Each document is loaded into memory and
+     * word list is created. Since the dictionary can be kept in memory, all operations can be done in memory.
+     * @param termType If term type is TOKEN, the terms are single word, if the term type is PHRASE, the terms are
+     *                 bi-words.
+     * @return Array list of terms occurring in the document collection.
+     */
     constructTerms(termType: TermType): Array<TermOccurrence> {
         let terms = new Array<TermOccurrence>()
         for (let doc of this.documents) {
@@ -148,6 +178,18 @@ export class MemoryCollection extends AbstractCollection {
         return terms;
     }
 
+    /**
+     * The method searches given query string in the document collection using the attribute list according to the
+     * given search parameter. First, the original query is filtered by removing phrase attributes, shortcuts and single
+     * word attributes. At this stage, we get the word and phrase attributes in the original query and the remaining
+     * words in the original query as two separate queries. Second, both single word and phrase attributes in the
+     * original query are searched in the document collection. Third, these intermediate query results are then
+     * intersected. Fourth, we put this results into either (i) an inverted index (ii) or a ranked based positional
+     * filtering with the filtered query to get the end result.
+     * @param query Query string
+     * @param parameter Search parameter for the query
+     * @return The intermediate result of the query obtained by doing attribute list based search in the collection.
+     */
     attributeSearch(query: Query, parameter: SearchParameter): QueryResult {
         let termAttributes = new Query()
         let phraseAttributes = new Query()
@@ -191,6 +233,14 @@ export class MemoryCollection extends AbstractCollection {
         }
     }
 
+    /**
+     * The method searches given query string in the document collection using the inverted index according to the
+     * given search parameter. If the search is (i) boolean, inverted index is used (ii) positional, positional
+     * inverted index is used, (iii) ranked, positional inverted index is used with a ranking algorithm at the end.
+     * @param query Query string
+     * @param searchParameter Search parameter for the query
+     * @return The intermediate result of the query obtained by doing inverted index based search in the collection.
+     */
     searchWithInvertedIndex(query: Query, searchParameter: SearchParameter): QueryResult {
         switch (searchParameter.getRetrievalType()) {
             case    RetrievalType.BOOLEAN:
@@ -208,6 +258,14 @@ export class MemoryCollection extends AbstractCollection {
         return new QueryResult()
     }
 
+    /**
+     * Filters current search result according to the predicted categories from the query string. For every search
+     * result, if it is in one of the predicated categories, is added to the filtered end result. Otherwise, it is
+     * omitted in the end result.
+     * @param currentResult Current search result before filtering.
+     * @param categories Predicted categories that match the query string.
+     * @return Filtered query result
+     */
     filterAccordingToCategories(currentResult: QueryResult, categories: Array<CategoryNode>): QueryResult {
         let filteredResult = new QueryResult()
         let items = currentResult.getItems()
@@ -223,6 +281,12 @@ export class MemoryCollection extends AbstractCollection {
         return filteredResult
     }
 
+    /**
+     * Constructs an auto complete list of product names for a given prefix. THe results are sorted according to
+     * frequencies.
+     * @param prefix Prefix of the name of the product.
+     * @return An auto complete list of product names for a given prefix.
+     */
     autoCompleteWord(prefix: string): Array<string> {
         let result = new Array<string>();
         let i = this.dictionary.getWordStartingWith(prefix)
@@ -241,6 +305,16 @@ export class MemoryCollection extends AbstractCollection {
         return result
     }
 
+    /**
+     * Searches a document collection for a given query according to the given search parameters. The documents are
+     * searched using (i) incidence matrix if the index type is incidence matrix, (ii) attribute list if search
+     * attributes option is selected, (iii) inverted index if the index type is inverted index and no attribute
+     * search is done. After the initial search, if there is a categorical focus, it filters the results
+     * according to the predicted categories from the query string.
+     * @param query Query string
+     * @param searchParameter Search parameter for the query
+     * @return The result of the query obtained by doing search in the collection.
+     */
     searchCollection(query: Query,
                      searchParameter: SearchParameter): QueryResult {
         let currentResult
