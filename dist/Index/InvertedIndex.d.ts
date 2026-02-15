@@ -28,7 +28,7 @@ export declare class InvertedIndex {
      * @param fileName Inverted index file.
      */
     readPostingList(fileName: string): void;
-    keyComparator: (a: (string | number)[], b: (string | number)[]) => 1 | -1 | 0;
+    keyComparator: (a: (string | number)[], b: (string | number)[]) => 0 | 1 | -1;
     saveSorted(fileName: string): void;
     /**
      * Saves the inverted index into the index file. The postings are stored in two lines. The first
@@ -52,7 +52,7 @@ export declare class InvertedIndex {
      * @return 1 if the size of the first posting list is larger than the second one, -1 if the size
      * of the first posting list is smaller than the second one, 0 if they are the same.
      */
-    postingListComparator: (listA: PostingList, listB: PostingList) => 1 | -1 | 0;
+    postingListComparator: (listA: PostingList, listB: PostingList) => 0 | 1 | -1;
     /**
      * Constructs a sorted array list of frequency counts for a word list and also sorts the word list according to
      * those frequencies.

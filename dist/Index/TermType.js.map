@@ -1,1 +1,1 @@
-{"version":3,"file":"TermType.js","sourceRoot":"","sources":["../../source/Index/TermType.ts"],"names":[],"mappings":";;;;;;;;;;;;IAAA,IAAY,QAEX;IAFD,WAAY,QAAQ;QAChB,yCAAK,CAAA;QAAE,2CAAM,CAAA;IACjB,CAAC,EAFW,QAAQ,GAAR,gBAAQ,KAAR,gBAAQ,QAEnB"}
+{"version":3,"file":"TermType.js","sourceRoot":"","sources":["../../source/Index/TermType.ts"],"names":[],"mappings":";;;AAAA,IAAY,QAEX;AAFD,WAAY,QAAQ;IAChB,yCAAK,CAAA;IAAE,2CAAM,CAAA;AACjB,CAAC,EAFW,QAAQ,wBAAR,QAAQ,QAEnB"}

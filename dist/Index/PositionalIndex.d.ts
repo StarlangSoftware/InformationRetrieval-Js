@@ -29,7 +29,7 @@ export declare class PositionalIndex {
      * @param fileName Positional index file.
      */
     readPositionalPostingList(fileName: string): void;
-    keyComparator: (a: (string | number)[], b: (string | number)[]) => 1 | -1 | 0;
+    keyComparator: (a: (string | number)[], b: (string | number)[]) => 0 | 1 | -1;
     saveSorted(fileName: string): void;
     /**
      * Saves the positional index into the index file. The postings are stored in n lines. The first line contains the
