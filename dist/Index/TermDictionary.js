@@ -58,10 +58,9 @@ class TermDictionary extends Dictionary_1.Dictionary {
     /**
      * Constructs the TermDictionary from a list of tokens (term occurrences). The terms array should be sorted
      * before calling this method. Constructs the distinct terms and their corresponding term ids.
-     * @param comparator Comparator method to compare two terms.
      * @param terms Sorted list of tokens in the memory collection.
      */
-    constructor2(comparator, terms) {
+    constructor2(terms) {
         let termId = 0;
         if (terms.length > 0) {
             let term = terms[0];
@@ -71,7 +70,7 @@ class TermDictionary extends Dictionary_1.Dictionary {
             let i = 1;
             while (i < terms.length) {
                 term = terms[i];
-                if (term.isDifferent(previousTerm, comparator)) {
+                if (term.isDifferent(previousTerm, this.comparator)) {
                     this.addTerm(term.getTerm().getName(), termId);
                     termId++;
                 }
@@ -83,10 +82,9 @@ class TermDictionary extends Dictionary_1.Dictionary {
     /**
      * Constructs the TermDictionary from a hash set of tokens (strings). Constructs sorted dictinct terms array and
      * their corresponding term ids.
-     * @param comparator Comparator method to compare two terms.
      * @param terms Hash set of tokens in the memory collection.
      */
-    constructor3(comparator, terms) {
+    constructor3(terms) {
         let words = terms;
         let wordList = new Array();
         for (let word of words) {
@@ -107,11 +105,11 @@ class TermDictionary extends Dictionary_1.Dictionary {
             }
             else {
                 if (fileNameOrTerms instanceof Array) {
-                    this.constructor2(comparator, fileNameOrTerms);
+                    this.constructor2(fileNameOrTerms);
                 }
                 else {
                     if (fileNameOrTerms instanceof Set) {
-                        this.constructor3(comparator, fileNameOrTerms);
+                        this.constructor3(fileNameOrTerms);
                     }
                 }
             }

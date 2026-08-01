@@ -26,10 +26,9 @@ export class TermDictionary extends Dictionary{
     /**
      * Constructs the TermDictionary from a list of tokens (term occurrences). The terms array should be sorted
      * before calling this method. Constructs the distinct terms and their corresponding term ids.
-     * @param comparator Comparator method to compare two terms.
      * @param terms Sorted list of tokens in the memory collection.
      */
-    constructor2(comparator: WordComparator, terms: Array<TermOccurrence>){
+    constructor2(terms: Array<TermOccurrence>){
         let termId = 0;
         if (terms.length > 0){
             let term = terms[0]
@@ -39,7 +38,7 @@ export class TermDictionary extends Dictionary{
             let i = 1
             while (i < terms.length){
                 term = terms[i]
-                if (term.isDifferent(previousTerm, comparator)){
+                if (term.isDifferent(previousTerm, this.comparator)){
                     this.addTerm(term.getTerm().getName(), termId)
                     termId++
                 }
@@ -52,10 +51,9 @@ export class TermDictionary extends Dictionary{
     /**
      * Constructs the TermDictionary from a hash set of tokens (strings). Constructs sorted dictinct terms array and
      * their corresponding term ids.
-     * @param comparator Comparator method to compare two terms.
      * @param terms Hash set of tokens in the memory collection.
      */
-    constructor3(comparator: WordComparator, terms: Set<string>){
+    constructor3(terms: Set<string>){
         let words = terms
         let wordList = new Array<Word>()
         for (let word of words){
@@ -76,10 +74,10 @@ export class TermDictionary extends Dictionary{
                 this.constructor1(fileNameOrTerms)
             } else {
                 if (fileNameOrTerms instanceof Array){
-                    this.constructor2(comparator, fileNameOrTerms)
+                    this.constructor2(fileNameOrTerms)
                 } else {
                     if (fileNameOrTerms instanceof Set){
-                        this.constructor3(comparator, fileNameOrTerms)
+                        this.constructor3(fileNameOrTerms)
                     }
                 }
             }

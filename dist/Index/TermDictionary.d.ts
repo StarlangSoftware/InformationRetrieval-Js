@@ -11,17 +11,15 @@ export declare class TermDictionary extends Dictionary {
     /**
      * Constructs the TermDictionary from a list of tokens (term occurrences). The terms array should be sorted
      * before calling this method. Constructs the distinct terms and their corresponding term ids.
-     * @param comparator Comparator method to compare two terms.
      * @param terms Sorted list of tokens in the memory collection.
      */
-    constructor2(comparator: WordComparator, terms: Array<TermOccurrence>): void;
+    constructor2(terms: Array<TermOccurrence>): void;
     /**
      * Constructs the TermDictionary from a hash set of tokens (strings). Constructs sorted dictinct terms array and
      * their corresponding term ids.
-     * @param comparator Comparator method to compare two terms.
      * @param terms Hash set of tokens in the memory collection.
      */
-    constructor3(comparator: WordComparator, terms: Set<string>): void;
+    constructor3(terms: Set<string>): void;
     constructor(comparator: WordComparator, fileNameOrTerms?: any);
     /**
      * Adds a new term to the sorted words array. First the term is searched in the words array using binary search,
